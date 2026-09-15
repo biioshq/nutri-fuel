@@ -15,6 +15,8 @@ type CounterProps = {
   className?: string;
   /** Pad to a fixed digit count so the block never reflows mid-count. */
   pad?: number;
+  /** Decimal places shown while counting and at rest. */
+  decimals?: number;
 };
 
 /**
@@ -29,12 +31,13 @@ export function Counter({
   duration = 2.1,
   className,
   pad = 0,
+  decimals = 0,
 }: CounterProps) {
   const maskRef = useRef<HTMLSpanElement>(null);
   const numberRef = useRef<HTMLSpanElement>(null);
   const motionOK = useMotionOK();
 
-  const format = (n: number) => String(Math.round(n)).padStart(pad, '0');
+  const format = (n: number) => n.toFixed(decimals).padStart(pad, '0');
 
   useIsoLayoutEffect(() => {
     const mask = maskRef.current;
@@ -79,7 +82,7 @@ export function Counter({
       trigger.kill();
       tl.kill();
     };
-  }, [value, duration, pad, motionOK]);
+  }, [value, duration, pad, decimals, motionOK]);
 
   return (
     // `lining-nums` matters here: the display face defaults to old-style

@@ -1,65 +1,74 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/ui/Logo';
+import { FacebookIcon, InstagramIcon, YoutubeIcon } from '@/components/ui/brand-icons';
 import { Magnetic } from '@/components/motion/Magnetic';
-import { useGsap, gsap, ScrollTrigger } from '@/hooks/useGsap';
+import { useSmoothScroll } from '@/components/layout/SmoothScroll';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { useIsoLayoutEffect } from '@/hooks/useIsoLayoutEffect';
 import { useMotionOK } from '@/hooks/useMediaQuery';
-import { NAV_LINKS, SITE } from '@/lib/site';
 import { EASE } from '@/lib/ease';
+import { NAV_LINKS, SHOP_HREF, SITE, SOCIALS } from '@/lib/site';
 import { cn } from '@/lib/utils';
+
+const ICONS = {
+  instagram: InstagramIcon,
+  youtube: YoutubeIcon,
+  facebook: FacebookIcon,
+} as const;
 
 /**
  * NAV
  *
- * A pill that floats clear of the page. At the top it is nothing but type on
- * the footage; past the first screen it draws in its own frosted surface, a
- * gold hairline and a shadow, and tightens by a few millimetres.
+ * A floating pill that reads the page beneath it. Over any section marked
+ * `data-nav-theme="dark"` — the hero film and the order panel — it is cream
+ * type on nothing, then smoked glass once the page moves. Everywhere else it
+ * is white glass with ink type.
  *
- * Everything that changes on scroll is a *non-transform* property, which is
- * deliberate: a transformed ancestor becomes a backdrop root, and a
- * backdrop-filter with a backdrop root behind it has nothing left to blur.
- * The entrance is the one exception, and it clears its own transform.
+ * Nothing that changes on scroll is a transform: a transformed ancestor
+ * becomes a backdrop root, and the glass would have nothing left to blur.
  *
- * Two things are pointedly quick. The links are set in the text face at label
- * size, semibold and full ink rather than a 70% wash of it, because a small
- * letterspaced label at 70% opacity on cream is a navigation you have to hunt
- * for. And the pill's own state change no longer transitions `padding` (which
- * relayouts) or `backdrop-filter` (which re-blurs the entire viewport, every
- * frame, for the length of the transition).
+ * Every trigger here refreshes *after* the rest of the page
+ * (`refreshPriority: -1`), because the showcase pins further down and its
+ * spacer moves every section below it — triggers measured before that pin
+ * exists would point at the wrong scroll positions.
  */
 export function Nav() {
-  const [scrolled, setScrolled] = useState(false);
+  const [dark, setDark] = useState(true);
+  const [active, setActive] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
 
-  const pathname = usePathname();
-  const motionOK = useMotionOK();
+  const listRef = useRef<HTMLUListElement>(null);
+  const markerRef = useRef<HTMLSpanElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
 
-  // Entrance. The transform is removed the instant it lands so the frosted
-  // pill below can actually sample the page behind it.
+  const motionOK = useMotionOK();
+  const { scrollTo, stop, start } = useSmoothScroll();
+
+  // --- Entrance -----------------------------------------------------------
   useIsoLayoutEffect(() => {
-    const bar = document.querySelector<HTMLElement>('.nav-pill');
-    if (!bar) return;
+    const pill = document.querySelector<HTMLElement>('.nav-pill');
+    if (!pill) return;
 
     if (!motionOK) {
-      gsap.set(bar, { opacity: 1, clearProps: 'transform' });
+      gsap.set(pill, { opacity: 1, clearProps: 'transform' });
       return;
     }
 
     const tween = gsap.fromTo(
-      bar,
+      pill,
       { opacity: 0, y: -22 },
       {
         opacity: 1,
         y: 0,
-        duration: 0.85,
-        delay: 0.12,
+        duration: 0.9,
+        delay: 0.3,
         ease: 'power4.out',
-        onComplete: () => gsap.set(bar, { clearProps: 'transform,willChange' }),
+        onComplete: () => gsap.set(pill, { clearProps: 'transform' }),
       }
     );
 
@@ -68,27 +77,92 @@ export function Nav() {
     };
   }, [motionOK]);
 
-  useGsap(() => {
-    const trigger = ScrollTrigger.create({
-      start: 'top -80',
-      end: 'max',
-      onToggle: (self) => setScrolled(self.isActive),
-    });
+  // --- Theme, scrolled state and the active section -----------------------
+  useIsoLayoutEffect(() => {
+    const triggers: ScrollTrigger[] = [];
 
-    return () => trigger.kill();
+    // Declared before any trigger exists: ScrollTrigger may call onRefresh
+    // synchronously inside create(), and the callback reads this array.
+    const darkZones: ScrollTrigger[] = [];
+    const syncTheme = () => setDark(darkZones.some((trigger) => trigger.isActive));
+
+    document.querySelectorAll('[data-nav-theme="dark"]').forEach((zone) => {
+      darkZones.push(
+        ScrollTrigger.create({
+          trigger: zone,
+          start: 'top top+=40',
+          end: 'bottom top+=40',
+          refreshPriority: -1,
+          onToggle: syncTheme,
+          onRefresh: syncTheme,
+        })
+      );
+    });
+    triggers.push(...darkZones);
+
+    for (const link of NAV_LINKS) {
+      const target = document.querySelector(link.href);
+      if (!target) continue;
+
+      triggers.push(
+        ScrollTrigger.create({
+          trigger: target,
+          start: 'top center',
+          end: 'bottom center',
+          refreshPriority: -1,
+          onToggle: (self) =>
+            setActive((current) =>
+              self.isActive ? link.href : current === link.href ? null : current
+            ),
+        })
+      );
+    }
+
+    syncTheme();
+
+    return () => triggers.forEach((trigger) => trigger.kill());
   }, []);
 
-  // Close the overlay whenever the route actually changes.
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+  // --- The marker glides to whichever link is current ----------------------
+  useIsoLayoutEffect(() => {
+    const list = listRef.current;
+    const marker = markerRef.current;
+    if (!list || !marker) return;
 
+    const link = active ? list.querySelector<HTMLElement>(`[data-href="${active}"]`) : null;
+
+    if (!link) {
+      gsap.to(marker, { opacity: 0, duration: 0.3, overwrite: 'auto' });
+      return;
+    }
+
+    gsap.to(marker, {
+      x: link.offsetLeft,
+      width: link.offsetWidth,
+      opacity: 1,
+      duration: motionOK ? 0.6 : 0,
+      ease: 'power3.out',
+      overwrite: 'auto',
+    });
+  }, [active, motionOK]);
+
+  // --- Mobile overlay: lock scroll, move focus, close on Escape ------------
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
+    if (open) {
+      stop();
+      wasOpen.current = true;
+      const frame = requestAnimationFrame(() =>
+        document.querySelector<HTMLElement>('#mobile-navigation a')?.focus()
+      );
+      return () => cancelAnimationFrame(frame);
+    }
+
+    start();
+    if (wasOpen.current) {
+      wasOpen.current = false;
+      toggleRef.current?.focus();
+    }
+  }, [open, stop, start]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -98,110 +172,102 @@ export function Nav() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  const isCurrent = useCallback(
-    (href: string) =>
-      // "/" has to match exactly — every path starts with a slash, so the
-      // prefix test would mark Home current on every route.
-      href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`),
-    [pathname]
-  );
+  // Lenis ignores scroll requests while stopped, so release it before
+  // travelling rather than waiting for the effect above.
+  const goFromOverlay = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+    event.preventDefault();
+    start();
+    setOpen(false);
+    scrollTo(href);
+  };
+
+  const onDark = dark && !open;
 
   return (
     <>
       <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
-        <div className="shell pt-2.5 sm:pt-3.5 lg:pt-4">
+        <div className="shell pt-3 lg:pt-4">
           <div
             className={cn(
-              'nav-pill pointer-events-auto relative mx-auto flex items-center justify-between gap-6 rounded-full reveal',
-              'transition-[background-color,border-color,box-shadow] duration-500 ease-luxe',
-              'border px-5 sm:px-7',
-              scrolled
-                ? 'h-[3.5rem] border-gold/25 bg-card/75 shadow-float backdrop-blur-lg lg:h-16'
-                : 'h-16 border-transparent bg-transparent shadow-none lg:h-[4.5rem]'
+              'nav-pill reveal pointer-events-auto relative mx-auto flex h-16 items-center justify-between gap-6 rounded-full border pr-2.5 pl-5 sm:pl-6',
+              'transition-[background-color,border-color,box-shadow,color] duration-500 ease-luxe',
+              // Over the film the nav is bare type — no surface at all. A soft
+              // shadow behind the letters (and the mark) is what keeps white
+              // legible on a light, busy frame without boxing anything in.
+              onDark
+                ? 'border-transparent bg-transparent text-canvas [text-shadow:0_1px_2px_rgb(0_0_0/0.25),0_2px_18px_rgb(0_0_0/0.35)]'
+                : 'border-hair/90 bg-canvas/80 text-ink shadow-float backdrop-blur-2xl'
             )}
           >
-            {/* An inner hairline of white light along the top edge — the thing
-                that turns a translucent pill into a piece of glass. */}
-            <span
-              aria-hidden
+            <a
+              href="#top"
+              aria-label={`${SITE.name} — back to top`}
               className={cn(
-                'pointer-events-none absolute inset-0 rounded-full transition-opacity duration-500 ease-luxe',
-                scrolled ? 'opacity-100' : 'opacity-0'
+                '-my-2 py-2 transition-[filter] duration-500',
+                onDark && 'drop-shadow-[0_2px_10px_rgb(0_0_0/0.35)]'
               )}
-              style={{ boxShadow: 'inset 0 1px 0 0 rgb(255 255 255 / 0.9)' }}
-            />
-
-            {/* Wordmark. Padding plus a matching negative margin gives a 44px
-                hit area without moving anything. */}
-            {/* The halo is in the page colour: invisible against paper, and
-                the only thing holding the wordmark together where the
-                transparent pill sits directly on the hero footage. */}
-            <Link
-              href="/"
-              className="group relative flex items-baseline gap-2.5 py-3.5 -my-3.5"
-              style={{ textShadow: '0 1px 14px rgb(248 245 239 / 0.9)' }}
             >
-              <span className="font-sans text-label font-semibold tracking-[0.26em] text-ink">
-                {SITE.nameShort}
-              </span>
-              <span className="font-sans text-micro font-medium text-ink-soft transition-colors duration-200 group-hover:text-gold-deep">
-                HOUSE
-              </span>
-            </Link>
+              <Logo />
+            </a>
 
-            {/* Desktop links */}
-            <ul className="hidden items-center gap-8 lg:flex">
+            {/* Desktop links, with one marker that travels between them. */}
+            <ul ref={listRef} className="relative hidden items-center lg:flex">
+              <span
+                ref={markerRef}
+                aria-hidden
+                className={cn(
+                  'absolute inset-y-0 left-0 rounded-full opacity-0 transition-colors duration-500',
+                  onDark ? 'bg-white/12' : 'bg-ink/[0.055]'
+                )}
+              />
               {NAV_LINKS.map((link) => (
+                // Not `relative`: the marker is positioned from each link's
+                // offsetLeft, which must be measured against the list.
                 <li key={link.href}>
-                  <Link
+                  <a
                     href={link.href}
-                    aria-current={isCurrent(link.href) ? 'page' : undefined}
+                    data-href={link.href}
+                    aria-current={active === link.href ? 'true' : undefined}
                     className={cn(
-                      'group relative block py-2 font-sans text-label font-semibold tracking-[0.2em] uppercase transition-colors duration-200 hover:text-ink',
-                      isCurrent(link.href) ? 'text-ink' : 'text-ink-soft'
+                      'block rounded-full px-4 py-2.5 font-sans text-[0.8125rem] font-medium transition-opacity duration-300',
+                      active === link.href ? 'opacity-100' : 'opacity-85 hover:opacity-100'
                     )}
                   >
                     {link.label}
-                    <span
-                      className={cn(
-                        'absolute inset-x-0 -bottom-0.5 h-px bg-gold transition-transform duration-400 ease-luxe',
-                        isCurrent(link.href)
-                          ? 'scale-x-100'
-                          : 'origin-right scale-x-0 group-hover:origin-left group-hover:scale-x-100'
-                      )}
-                    />
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
 
-            <div className="flex items-center gap-3">
-              <Magnetic className="hidden sm:inline-block" strength={0.22} padding={26}>
-                <Button asChild size="sm" variant="outline">
-                  <Link href="/reserve">Reserve</Link>
+            <div className="flex items-center gap-2">
+              <Magnetic className="hidden sm:inline-block" strength={0.22} padding={24}>
+                <Button asChild size="sm" variant={onDark ? 'light' : 'primary'}>
+                  <a href={SHOP_HREF}>Shop Now</a>
                 </Button>
               </Magnetic>
 
-              {/* Mobile trigger */}
               <button
+                ref={toggleRef}
                 type="button"
                 onClick={() => setOpen((value) => !value)}
                 aria-expanded={open}
-                aria-controls="mobile-menu"
-                aria-label={open ? 'Close menu' : 'Open menu'}
-                className="relative grid size-11 touch-manipulation place-items-center rounded-full border border-hair bg-card/60 transition-transform duration-[120ms] ease-luxe active:scale-90 lg:hidden"
+                aria-controls="mobile-navigation"
+                aria-label={open ? 'Close navigation' : 'Open navigation'}
+                className={cn(
+                  'relative grid size-11 touch-manipulation place-items-center rounded-full border transition-[transform,border-color] duration-150 ease-luxe active:scale-90 lg:hidden',
+                  onDark ? 'border-white/25' : 'border-hair'
+                )}
               >
-                <span className="sr-only">Menu</span>
                 <span
                   className={cn(
-                    'absolute h-px w-4 bg-ink transition-transform duration-300 ease-luxe',
-                    open ? 'translate-y-0 rotate-45' : '-translate-y-[3px]'
+                    'absolute h-px w-4 bg-current transition-transform duration-300 ease-luxe',
+                    open ? 'rotate-45' : '-translate-y-[3px]'
                   )}
                 />
                 <span
                   className={cn(
-                    'absolute h-px w-4 bg-ink transition-transform duration-300 ease-luxe',
-                    open ? 'translate-y-0 -rotate-45' : 'translate-y-[3px]'
+                    'absolute h-px w-4 bg-current transition-transform duration-300 ease-luxe',
+                    open ? '-rotate-45' : 'translate-y-[3px]'
                   )}
                 />
               </button>
@@ -210,61 +276,84 @@ export function Nav() {
         </div>
       </header>
 
-      {/* Full-bleed mobile menu */}
       <AnimatePresence>
         {open && (
-          <motion.div
-            id="mobile-menu"
+          <motion.nav
+            id="mobile-navigation"
+            aria-label="Site"
             initial={{ clipPath: 'inset(0% 0% 100% 0%)' }}
             animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
             exit={{ clipPath: 'inset(0% 0% 100% 0%)' }}
-            transition={{ duration: 0.55, ease: EASE.curtain }}
-            className="fixed inset-0 z-40 flex flex-col justify-end bg-canvas lg:hidden"
+            transition={{ duration: 0.6, ease: EASE.curtain }}
+            className="fixed inset-0 z-40 flex flex-col bg-canvas lg:hidden"
           >
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0"
               style={{
                 background:
-                  'radial-gradient(88% 52% at 50% 104%, rgb(241 231 213 / 0.9), transparent 70%)',
+                  'radial-gradient(90% 55% at 50% 105%, rgb(246 239 228 / 0.95), transparent 70%)',
               }}
             />
 
-            <ul className="shell relative flex flex-col gap-1 pb-[18vh]">
+            <ul className="shell relative flex flex-1 flex-col justify-center gap-1 pt-24">
               {NAV_LINKS.map((link, index) => (
                 <motion.li
                   key={link.href}
-                  initial={{ y: 42, opacity: 0 }}
+                  initial={{ y: 40, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 22, opacity: 0, transition: { duration: 0.3 } }}
-                  transition={{ duration: 0.6, ease: EASE.luxe, delay: 0.1 + index * 0.05 }}
+                  exit={{ y: 20, opacity: 0, transition: { duration: 0.25 } }}
+                  transition={{ duration: 0.7, ease: EASE.luxe, delay: 0.12 + index * 0.05 }}
                 >
-                  <Link
+                  <a
                     href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="display-face block py-2 text-h2 text-ink"
+                    onClick={(event) => goFromOverlay(event, link.href)}
+                    className="flex items-baseline gap-4 py-2 text-ink"
                   >
-                    {link.label}
-                  </Link>
+                    <span className="font-sans text-micro text-faint tabular-nums">
+                      0{index + 1}
+                    </span>
+                    <span className="display-face text-[clamp(2.5rem,11vw,4.25rem)]">
+                      {link.label}
+                    </span>
+                  </a>
                 </motion.li>
               ))}
-
-              <motion.li
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ delay: 0.32, duration: 0.45 }}
-                className="mt-10"
-              >
-                <div aria-hidden className="rule-gold mb-10" />
-                <Button asChild size="lg" variant="gilt">
-                  <Link href="/reserve" onClick={() => setOpen(false)}>
-                    Reserve a table
-                  </Link>
-                </Button>
-              </motion.li>
             </ul>
-          </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="shell relative flex items-center justify-between gap-6 pb-10"
+            >
+              <Button asChild size="lg" variant="primary">
+                <a href={SHOP_HREF} onClick={(event) => goFromOverlay(event, SHOP_HREF)}>
+                  Shop Now
+                </a>
+              </Button>
+
+              <ul className="flex gap-2">
+                {SOCIALS.map((social) => {
+                  const Icon = ICONS[social.icon];
+                  return (
+                    <li key={social.label}>
+                      <a
+                        href={social.href}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        aria-label={social.label}
+                        className="grid size-11 place-items-center rounded-full border border-hair text-ink-soft"
+                      >
+                        <Icon className="size-4" />
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </motion.div>
+          </motion.nav>
         )}
       </AnimatePresence>
     </>

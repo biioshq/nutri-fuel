@@ -1,106 +1,119 @@
 @import 'tailwindcss';
 
 /* ==========================================================================
-   CRÈMA HOUSE — design tokens
-   A bright editorial palette: warm paper, oat, porcelain-white cards, and a
-   single soft-gold accent. Nothing is flat; every surface carries either a
-   gradient, a grain, or a shadow.
+   AJAY PROTEIN — design tokens
+   White first. Warm beige and soft cream carry the quiet surfaces; chocolate,
+   vanilla bean and strawberry appear only as accents, each owned by its
+   flavour. Nothing is loud, and nothing is flat.
    ========================================================================== */
 
 @theme {
   /* --- Surface ------------------------------------------------------- */
-  --color-canvas: #f8f5ef; /* page base — warm paper            */
-  --color-sand: #f3eee5; /* secondary band                    */
-  --color-card: #ffffff; /* the cards                         */
-  --color-hair: #e5ddcf; /* dividers, borders                 */
-  --color-hair-soft: #efe9dd; /* the faintest rule                 */
+  --color-canvas: #ffffff; /* page base — pure white            */
+  --color-pearl: #faf8f5; /* the faintest warm band             */
+  --color-cream: #f6efe4; /* soft cream                         */
+  --color-beige: #ede3d6; /* warm beige — secondary surfaces    */
+  --color-sand: #dccdb9; /* borders that need to be seen       */
+  --color-hair: #ebe4da; /* dividers, hairlines                */
 
   /* --- Ink ----------------------------------------------------------- */
-  --color-ink: #222222; /* headlines — warm charcoal         */
-  --color-ink-soft: #46413a; /* body copy                         */
-  --color-mute: #8b8378; /* captions, meta                    */
-  --color-faint: #b3aa9c; /* the quietest text on the page     */
+  --color-ink: #16110d; /* headlines — warm near-black        */
+  --color-ink-soft: #4b433c; /* body copy                          */
+  --color-mute: #8b8178; /* captions, meta                     */
+  --color-faint: #b8aea3; /* the quietest text on the page      */
 
-  /* --- Accent -------------------------------------------------------- */
-  --color-gold: #c49a52;
-  --color-gold-lit: #ddb877;
-  --color-gold-deep: #9a7534;
-  --color-gold-wash: #f1e7d5;
+  /* --- Accent: one per flavour --------------------------------------- */
+  --color-cocoa: #6b4430;
+  --color-cocoa-lit: #9a6a4f;
+  --color-cocoa-deep: #2a1b13;
+  --color-night: #120c08; /* the dark closing section           */
+
+  --color-vanilla: #e9dcc4;
+  --color-vanilla-deep: #b8976a;
+
+  --color-berry: #df8795;
+  --color-berry-deep: #b9566a;
+  --color-berry-soft: #f8e1e5;
 
   /* --- Type ----------------------------------------------------------
-     Display: Cormorant Garamond — a high-contrast old-style that echoes the
-     sculpted letters standing in the hero footage. Text: Inter. */
-  --font-display: var(--font-cormorant), ui-serif, 'Iowan Old Style', Georgia, serif;
+     Display: Outfit — a geometric sans held at weight 200 for the very
+     large sizes, where thin strokes read as precision rather than fragility.
+     Text: Inter, for the labels and body copy. */
+  --font-display: var(--font-outfit), ui-sans-serif, system-ui, -apple-system, 'Helvetica Neue', sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
 
-  /* Fluid editorial scale. Line-heights tighten as size grows. */
+  /* Fluid scale. Line-height and tracking tighten as size grows. */
   --text-micro: 0.6875rem;
   --text-micro--line-height: 1.2;
-  --text-micro--letter-spacing: 0.3em;
+  --text-micro--letter-spacing: 0.24em;
 
-  --text-label: 0.75rem;
+  --text-label: 0.8125rem;
   --text-label--line-height: 1.4;
-  --text-label--letter-spacing: 0.22em;
+  --text-label--letter-spacing: 0.14em;
 
-  --text-body: clamp(0.95rem, 0.9rem + 0.26vw, 1.0625rem);
-  --text-body--line-height: 1.8;
+  --text-body: clamp(0.975rem, 0.93rem + 0.2vw, 1.0625rem);
+  --text-body--line-height: 1.7;
 
-  --text-lede: clamp(1.125rem, 1rem + 0.7vw, 1.5rem);
-  --text-lede--line-height: 1.62;
+  --text-lede: clamp(1.125rem, 1rem + 0.55vw, 1.4375rem);
+  --text-lede--line-height: 1.55;
 
-  --text-h3: clamp(1.6rem, 1.2rem + 1.7vw, 2.6rem);
-  --text-h3--line-height: 1.12;
+  --text-h3: clamp(1.5rem, 1.15rem + 1.3vw, 2.375rem);
+  --text-h3--line-height: 1.08;
+  --text-h3--letter-spacing: -0.02em;
 
-  --text-h2: clamp(2.5rem, 1.5rem + 4.2vw, 5.75rem);
-  --text-h2--line-height: 1;
-  --text-h2--letter-spacing: -0.018em;
+  --text-h2: clamp(2.6rem, 1.3rem + 5vw, 6.75rem);
+  --text-h2--line-height: 0.98;
+  --text-h2--letter-spacing: -0.045em;
 
-  --text-h1: clamp(3rem, 1.6rem + 6.4vw, 8rem);
-  --text-h1--line-height: 0.94;
-  --text-h1--letter-spacing: -0.022em;
+  --text-h1: clamp(3.1rem, 1.2rem + 7.4vw, 10rem);
+  --text-h1--line-height: 0.92;
+  --text-h1--letter-spacing: -0.055em;
 
-  --tracking-luxe: 0.3em;
-  --tracking-wide-sm: 0.16em;
+  --text-mega: clamp(4rem, 1rem + 12vw, 16rem);
+  --text-mega--line-height: 0.86;
+  --text-mega--letter-spacing: -0.06em;
+
+  --tracking-luxe: 0.26em;
 
   /* --- Rhythm --------------------------------------------------------
-     Whitespace is the loudest thing on this page — but loud is not the same
-     as vacant. These are the two numbers that set the whole page's density;
-     everything else is a multiple of the spacing scale. */
+     Whitespace is the loudest thing on this page. These two numbers set
+     the whole page's density. */
   --spacing-gutter: clamp(1.25rem, 4.5vw, 5rem);
-  --spacing-section: clamp(3.75rem, 8.5vh, 7rem);
+  --spacing-section: clamp(6rem, 14vh, 11rem);
 
   /* --- Form ---------------------------------------------------------- */
-  --radius-lg: 2rem;
-  --radius-xl: 3rem;
+  --radius-card: 2rem;
+  --radius-xl: 2.75rem;
 
   /* Shadows are warm, never grey — a cool shadow on cream reads as dirt. */
-  --shadow-soft: 0 1px 2px rgb(58 43 22 / 0.03), 0 10px 24px -12px rgb(58 43 22 / 0.1);
+  --shadow-soft: 0 1px 2px rgb(42 27 19 / 0.04), 0 8px 24px -12px rgb(42 27 19 / 0.12);
   --shadow-float:
-    0 2px 5px rgb(58 43 22 / 0.035), 0 18px 44px -20px rgb(58 43 22 / 0.16),
-    0 44px 90px -50px rgb(58 43 22 / 0.14);
+    0 2px 6px rgb(42 27 19 / 0.04), 0 24px 48px -24px rgb(42 27 19 / 0.18),
+    0 60px 100px -60px rgb(42 27 19 / 0.2);
   --shadow-lift:
-    0 4px 10px rgb(58 43 22 / 0.05), 0 30px 66px -24px rgb(58 43 22 / 0.2),
-    0 70px 130px -60px rgb(58 43 22 / 0.22);
-  --shadow-glow: 0 0 0 1px rgb(196 154 82 / 0.24), 0 22px 60px -22px rgb(196 154 82 / 0.42);
-  --shadow-pill: 0 1px 2px rgb(58 43 22 / 0.05), 0 12px 30px -14px rgb(58 43 22 / 0.28);
+    0 6px 14px rgb(42 27 19 / 0.06), 0 40px 80px -30px rgb(42 27 19 / 0.28),
+    0 90px 140px -70px rgb(42 27 19 / 0.3);
+  --shadow-pill: 0 1px 2px rgb(42 27 19 / 0.06), 0 12px 28px -14px rgb(42 27 19 / 0.35);
+  --shadow-glass: inset 0 1px 0 rgb(255 255 255 / 0.65), 0 20px 50px -30px rgb(42 27 19 / 0.25);
 
   /* --- Motion --------------------------------------------------------
-     One vocabulary of easings for the entire site. No `ease-in-out`, and no
-     overshoot anywhere: nothing on this page bounces. */
+     One vocabulary of easings for the entire site. Nothing bounces. */
   --ease-luxe: cubic-bezier(0.16, 1, 0.3, 1); /* the house easing       */
   --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1); /* reveals / masks    */
   --ease-drift: cubic-bezier(0.33, 1, 0.68, 1); /* slow settles         */
 
-  --animate-pulse-soft: pulse-soft 5s var(--ease-drift) infinite;
+  --animate-pulse-soft: pulse-soft 4s var(--ease-drift) infinite;
 }
 
 @keyframes pulse-soft {
   0%,
   100% {
-    opacity: 0.4;
+    opacity: 0.35;
+    transform: scale(1);
   }
   50% {
     opacity: 0.9;
+    transform: scale(1.6);
   }
 }
 
@@ -121,6 +134,7 @@
     scroll-behavior: auto; /* Lenis owns scrolling */
     background-color: var(--color-canvas);
     color-scheme: light;
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -128,39 +142,29 @@
     color: var(--color-ink-soft);
     font-family: var(--font-sans);
     font-size: var(--text-body);
-    line-height: 1.8;
+    line-height: 1.7;
     font-synthesis-weight: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: clip;
-
-    /* A flat, cheap base colour, and a stacking context.
-
-       The two warm pools that used to sit here as a `background-attachment:
-       fixed` image now live on .page-glow instead. A fixed-attachment
-       background is the one thing a browser cannot composite: it repaints the
-       full viewport on every single scroll frame, which on this page meant two
-       large radial gradients rasterised sixty times a second for the whole
-       scroll. `isolation` is what lets .page-glow sit at z-index -1 *inside*
-       body — above this colour, beneath every section. */
     background-color: var(--color-canvas);
+    /* Lets .page-glow sit at z-index -1 inside body — above this colour,
+       beneath every section. */
     isolation: isolate;
   }
 
-  /* The light in the room. Identical picture to the old fixed background; a
-     fixed *element* is promoted to its own layer and merely translated, where
-     a fixed *background* is repainted. */
+  /* Ambient light. A fixed *element* is promoted and merely composited; a
+     fixed *background* would be repainted on every scroll frame. */
   .page-glow {
     position: fixed;
     inset: 0;
     z-index: -1;
     pointer-events: none;
     background-image:
-      radial-gradient(96% 48% at 92% 4%, rgb(241 231 213 / 0.55) 0%, transparent 62%),
-      radial-gradient(130% 66% at 50% 106%, rgb(240 234 223 / 0.7) 0%, transparent 68%);
+      radial-gradient(90% 50% at 92% 0%, rgb(246 239 228 / 0.7) 0%, transparent 60%),
+      radial-gradient(120% 60% at 8% 100%, rgb(237 227 214 / 0.45) 0%, transparent 65%);
   }
 
-  /* Lenis drives translation; the native bar would double-report position. */
   html.lenis,
   html.lenis body {
     height: auto;
@@ -179,7 +183,7 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    font-weight: 300;
+    font-weight: 200;
     color: var(--color-ink);
     margin: 0;
     text-wrap: balance;
@@ -201,6 +205,7 @@
     background: none;
     border: 0;
     padding: 0;
+    cursor: pointer;
   }
 
   img,
@@ -210,44 +215,27 @@
   }
 
   ::selection {
-    background: var(--color-gold-wash);
+    background: #efe0cf;
     color: var(--color-ink);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-gold);
+    outline: 2px solid var(--color-cocoa);
     outline-offset: 3px;
-    border-radius: 2px;
+    border-radius: 4px;
   }
 
   /* ------------------------------------------------------------------
-     The scrollbar, set as furniture rather than left as a browser artefact.
+     The scrollbar, set as furniture: a hairline track and a single
+     cocoa pill floating inside it.
 
-     A hairline of oat runs down the margin — the same rule that divides
-     everything else on the page — and the thumb is a single warm gold pill
-     floating inside it, inset by a transparent border so it never touches
-     the rule. It thickens by two pixels under the pointer, which is the only
-     affordance a bar this quiet needs.
-
-     `scrollbar-gutter: stable` is load-bearing, not cosmetic: opening the
-     mobile menu locks body scroll, and without a permanently reserved gutter
-     the whole page would jump sideways by the width of the bar at the moment
-     the overlay appears.
+     Chrome disables the pseudo-elements the moment it sees the standard
+     properties, so those are fenced to Firefox only.
      ------------------------------------------------------------------ */
-  html {
-    scrollbar-gutter: stable;
-  }
-
-  /* Firefox has no scrollbar pseudo-elements, only these two properties — and
-     Chrome *disables* the pseudo-elements outright the moment it sees either
-     of them on the element, standard-first. Left unfenced, everything below
-     this is dead code in Chrome and Edge and the bar falls back to a flat
-     gold slab. `-moz-appearance` is the fence: measured false in Chrome 151,
-     true in Firefox. */
   @supports (-moz-appearance: none) {
     html {
       scrollbar-width: thin;
-      scrollbar-color: var(--color-gold) transparent;
+      scrollbar-color: var(--color-cocoa-lit) transparent;
     }
   }
 
@@ -258,40 +246,25 @@
 
   ::-webkit-scrollbar-track {
     background: transparent;
-    /* The rule in the margin. */
-    box-shadow: inset 1px 0 0 0 rgb(229 221 207 / 0.85);
+    box-shadow: inset 1px 0 0 0 rgb(235 228 218 / 0.9);
   }
 
   ::-webkit-scrollbar-thumb {
     border-radius: 9999px;
-    /* Transparent border + content-box clip is how you inset a thumb: the
-       element stays 11px wide for hit-testing, the paint is 5px. */
     border: 3px solid transparent;
     background-clip: content-box;
     background-image: linear-gradient(
       180deg,
-      var(--color-gold-lit) 0%,
-      var(--color-gold) 46%,
-      var(--color-gold-deep) 100%
+      var(--color-cocoa-lit) 0%,
+      var(--color-cocoa) 55%,
+      var(--color-cocoa-deep) 100%
     );
   }
 
   ::-webkit-scrollbar-thumb:hover {
     border-width: 2px;
-    background-image: linear-gradient(
-      180deg,
-      var(--color-gold-lit) 0%,
-      var(--color-gold-lit) 40%,
-      var(--color-gold) 100%
-    );
   }
 
-  ::-webkit-scrollbar-thumb:active {
-    border-width: 2px;
-    background-image: linear-gradient(180deg, var(--color-gold) 0%, var(--color-gold-deep) 100%);
-  }
-
-  /* No arrow buttons, and no grey square where two bars would meet. */
   ::-webkit-scrollbar-button,
   ::-webkit-scrollbar-corner {
     display: none;
@@ -306,43 +279,60 @@
 /* Page gutter — one source of truth for horizontal rhythm. */
 @utility shell {
   width: 100%;
-  max-width: 92rem;
+  max-width: 96rem;
   margin-inline: auto;
   padding-inline: var(--spacing-gutter);
 }
 
-/* Display face for elements that must read as editorial type without being
-   headings — the wordmark, oversized numerals, pull quotes. */
+/* Display face for type that must read as a headline without being one —
+   the wordmark, oversized numerals, statistics. */
 @utility display-face {
   font-family: var(--font-display);
-  font-weight: 300;
+  font-weight: 200;
   color: var(--color-ink);
-  line-height: 0.94;
+  line-height: 0.92;
+  letter-spacing: -0.04em;
 }
 
 /* Uppercase micro-label used above every section heading. */
 @utility eyebrow {
   font-family: var(--font-sans);
   font-size: var(--text-micro);
+  line-height: 1.2;
   font-weight: 500;
   letter-spacing: var(--tracking-luxe);
   text-transform: uppercase;
-  color: var(--color-gold-deep);
+  color: var(--color-cocoa);
 }
 
-/* The floating white card used by the menu, the gallery and the testimonials. */
+/* Frosted light glass — for surfaces that sit over imagery or colour. */
+@utility glass {
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.72) 0%, rgb(255 255 255 / 0.44) 100%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid rgb(255 255 255 / 0.7);
+  box-shadow: var(--shadow-glass);
+}
+
+/* Smoked glass — the same idea for dark grounds and video. */
+@utility glass-dark {
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.13) 0%, rgb(255 255 255 / 0.04) 100%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.14),
+    0 30px 60px -40px rgb(0 0 0 / 0.6);
+}
+
+/* The white card. */
 @utility card-surface {
-  background: linear-gradient(
-    168deg,
-    rgb(255 255 255) 0%,
-    rgb(255 255 255) 62%,
-    rgb(251 249 245) 100%
-  );
-  border: 1px solid rgb(229 221 207 / 0.9);
+  background: linear-gradient(170deg, #ffffff 0%, #ffffff 55%, var(--color-pearl) 100%);
+  border: 1px solid var(--color-hair);
   box-shadow: var(--shadow-float);
 }
 
-/* Hairline rule that matches the warm palette. */
+/* Hairline rule that fades at both ends. */
 @utility hairline {
   height: 1px;
   width: 100%;
@@ -355,29 +345,15 @@
   );
 }
 
-/* The gold divider — a single hair of light, brightest in the middle. */
-@utility rule-gold {
-  height: 1px;
-  width: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgb(196 154 82 / 0.14) 12%,
-    rgb(196 154 82 / 0.72) 50%,
-    rgb(196 154 82 / 0.14) 88%,
-    transparent 100%
-  );
-}
-
-/* Gold gradient text for accented words inside headlines. */
-@utility text-gilt {
+/* Chocolate gradient text for accented words inside headlines. */
+@utility text-cocoa-gradient {
   background: linear-gradient(
     100deg,
-    var(--color-gold-deep) 0%,
-    var(--color-gold) 34%,
-    var(--color-gold-lit) 50%,
-    var(--color-gold) 66%,
-    var(--color-gold-deep) 100%
+    var(--color-cocoa-deep) 0%,
+    var(--color-cocoa) 38%,
+    var(--color-cocoa-lit) 55%,
+    var(--color-cocoa) 75%,
+    var(--color-cocoa-deep) 100%
   );
   background-size: 200% 100%;
   -webkit-background-clip: text;
@@ -395,17 +371,12 @@
 
 @utility split-char {
   display: inline-block;
-  /* No `filter` — nothing animates one per character any more (see the
-     chars-blur branch of SplitHeading), and hinting a filter that never
-     arrives buys every glyph an offscreen surface for nothing. */
   will-change: transform, opacity;
 }
 
 /* "Hidden until its reveal plays."
    Every scroll-revealed element wears this instead of a bare `opacity-0`,
-   because the timelines that would have un-hidden it never run under reduced
-   motion — and an element that is only ever shown by an animation you have
-   opted out of is simply an invisible element. */
+   because under reduced motion the timeline that would un-hide it never runs. */
 @utility reveal {
   opacity: 0;
 }
@@ -417,110 +388,65 @@
 }
 
 /* ==========================================================================
-   HERO
+   HERO FRAME
 
-   Which of the two framings applies is decided in Hero.tsx, from the geometry
-   rather than from a breakpoint, and published here as `.hero-stacked` plus
-   `--hero-frame-bottom` — the exact line where the picture ends.
+   The film always spans the full width of the screen, starting at the very
+   top, with the nav floating directly on it.
 
-   Filled: the picture covers the section and the copy sits over the foot of it.
-   Stacked: the picture is a band at the head of the section and the copy takes
-   the paper beneath. Everything below the picture keys off the variable, never
-   off a fixed percentage — the band is about a quarter of a phone but nearly
-   half of a portrait tablet, and a stop that clears the first cuts through the
-   second.
+   The section is exactly as tall as the film at full width, capped at the
+   screen height: `min(100svh, 56.25vw)`. On any screen up to 16:9 the whole
+   frame is therefore visible edge to edge with nothing cropped; only screens
+   wider than 16:9 lose a sliver off the top and bottom to fill.
+
+   Narrower than 13:10 (phones, portrait tablets) the film is a short band, too
+   short to carry buttons over the bottles, so the buttons drop beneath it and
+   the film's lower edge fades into a dark base for them to stand on.
+
+   Only positioning changes here. These rules are deliberately unlayered, so
+   they win over any Tailwind utility on the same elements, and they never
+   touch `transform` — GSAP owns that on the wrappers.
    ========================================================================== */
 
-.hero-paper {
-  display: none;
+.hero {
+  height: min(100svh, 56.25vw);
 }
 
-.hero-front {
-  /* Clear of the lettering along the foot of the frame. */
-  bottom: clamp(5.5rem, 16vh, 9.5rem);
-}
-
-.hero-stacked .hero-paper {
-  display: block;
-  background: linear-gradient(
-    180deg,
-    rgb(248 245 239 / 0) var(--hero-frame-bottom, 33%),
-    rgb(248 245 239 / 0.9) calc(var(--hero-frame-bottom, 33%) + 7%),
-    rgb(248 245 239 / 1) calc(var(--hero-frame-bottom, 33%) + 14%)
-  );
-}
-
-.hero-stacked .hero-front {
-  top: calc(var(--hero-frame-bottom, 33%) + 9%);
-  bottom: auto;
-}
-
-/* ==========================================================================
-   Menu card — the reward for hovering
-   Lift, zoom, deepen, glow. All four run on the same curve and the same
-   duration, so the card moves as one object.
-   ========================================================================== */
-
-.menu-card-media img {
-  transition: transform 900ms var(--ease-luxe);
-}
-
-.menu-card-shell {
-  transition:
-    transform 600ms var(--ease-luxe),
-    border-color 600ms var(--ease-luxe);
-}
-
-/* The deeper shadow is a second, pre-rendered layer that fades in, rather than
-   a box-shadow interpolated frame by frame. Interpolating a three-part shadow
-   forces a full repaint of the card and its blur radius on every frame; an
-   opacity crossfade is a compositor-only operation. It lives on the inner
-   wrapper because the shell clips its own overflow and would cut the shadow
-   off. */
-.menu-card-inner::after {
-  content: '';
+.hero-frame {
   position: absolute;
   inset: 0;
-  z-index: -1;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lift);
-  opacity: 0;
-  transition: opacity 600ms var(--ease-luxe);
-  pointer-events: none;
 }
 
-.menu-price {
-  transition:
-    color 700ms var(--ease-luxe),
-    text-shadow 700ms var(--ease-luxe);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .menu-card:hover .menu-card-shell,
-  .menu-card:focus-within .menu-card-shell {
-    transform: translate3d(0, -0.9rem, 4rem);
-    border-color: rgb(196 154 82 / 0.42);
+@media (max-aspect-ratio: 13/10) {
+  .hero {
+    height: auto;
+    padding-bottom: clamp(1.5rem, 7vw, 3rem);
+    background: linear-gradient(180deg, #2a1b13 0%, #1a110c 100%);
   }
 
-  .menu-card:hover .menu-card-inner::after,
-  .menu-card:focus-within .menu-card-inner::after {
-    opacity: 1;
+  .hero-parallax,
+  .hero-media {
+    position: relative;
+    inset: auto;
   }
 
-  .menu-card:hover .menu-card-media img,
-  .menu-card:focus-within .menu-card-media img {
-    transform: scale(1.07);
+  .hero-frame {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 78%, transparent 100%);
   }
 
-  .menu-card:hover .menu-price,
-  .menu-card:focus-within .menu-price {
-    color: var(--color-gold-deep);
-    text-shadow: 0 0 22px rgb(221 184 119 / 0.85);
+  .hero-actions {
+    position: relative;
+    inset: auto;
+    margin-top: clamp(0.25rem, 2vw, 1rem);
   }
 }
 
 /* ==========================================================================
-   Reduced motion — the site degrades to a clean, still editorial layout.
+   Reduced motion — the site degrades to a clean, still layout.
    ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {

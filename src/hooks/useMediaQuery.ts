@@ -67,7 +67,3 @@ export function useMotionOK(): boolean {
 export function useHasFinePointer(): boolean {
   return useMediaQuery('(hover: hover) and (pointer: fine)');
 }
-
-export function useIsDesktop(): boolean {
-  return useMediaQuery('(min-width: 1024px)');
-}

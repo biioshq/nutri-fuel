@@ -90,6 +90,3 @@ export function subscribePointer(subscriber: PointerSubscriber): () => void {
     if (subscribers.size === 0) stop();
   };
 }
-
-/** Last known viewport position. Useful for a first frame before any move. */
-export const pointerPosition = () => ({ x: pointerX, y: pointerY });

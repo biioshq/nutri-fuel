@@ -26,10 +26,10 @@ const NOISE =
 
 export function Grain() {
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 z-[70]">
+    <div aria-hidden className="pointer-events-none fixed inset-0 z-70">
       {/* Tooth */}
       <div
-        className="absolute -inset-[6%] opacity-[0.04]"
+        className="absolute inset-[-6%] opacity-[0.04]"
         style={{ backgroundImage: `url("${NOISE}")`, backgroundSize: '220px 220px' }}
       />
 
@@ -39,7 +39,7 @@ export function Grain() {
         className="absolute inset-0"
         style={{
           background:
-            'linear-gradient(184deg, rgb(255 255 255 / 0.10) 0%, rgb(255 255 255 / 0) 22%, rgb(255 255 255 / 0) 76%, rgb(233 224 209 / 0.22) 100%)',
+            'linear-gradient(184deg, rgb(255 255 255 / 0.10) 0%, rgb(255 255 255 / 0) 22%, rgb(255 255 255 / 0) 80%, rgb(237 227 214 / 0.14) 100%)',
         }}
       />
     </div>

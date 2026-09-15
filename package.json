@@ -1,12 +1,12 @@
 {
-  "name": "crema-house",
-  "version": "1.0.0",
+  "name": "ajay-protein",
+  "version": "2.0.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "media": "node scripts/optimize-media.mjs"
+    "typecheck": "tsc --noEmit"
   },
   "type": "commonjs",
   "private": true,

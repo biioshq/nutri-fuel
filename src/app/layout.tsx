@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Cormorant_Garamond, Inter } from 'next/font/google';
+import { Inter, Outfit } from 'next/font/google';
 import './globals.css';
 
 import { SmoothScroll } from '@/components/layout/SmoothScroll';
@@ -9,22 +9,14 @@ import { Footer } from '@/components/sections/Footer';
 import { SITE } from '@/lib/site';
 
 /**
- * Display: Cormorant Garamond — a high-contrast old-style with long, fine
- * hairlines. Held at 300 for the very large sizes, where a heavier weight
- * would read as a magazine cover rather than a five-star lobby.
- * Text: Inter, for the micro-labels and body copy.
+ * Display: Outfit — a geometric sans, variable, so the 200 used for the huge
+ * headings and the 400 used for small numerals come from a single file.
+ * Text: Inter, for labels and body copy.
  */
-const cormorant = Cormorant_Garamond({
+const outfit = Outfit({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-cormorant',
-  // Cormorant is not a variable font: every weight and every style is a
-  // separate file. The display face is set at 300 everywhere on the site and
-  // the two <em>s that exist are both `not-italic`, so the other six faces
-  // were downloaded for nothing — and every one of them delayed
-  // `document.fonts.ready`, which is what every split-text reveal waits on.
-  weight: ['300', '400'],
-  style: ['normal'],
+  variable: '--font-outfit',
 });
 
 const inter = Inter({
@@ -42,11 +34,12 @@ export const metadata: Metadata = {
   description: SITE.description,
   applicationName: SITE.name,
   keywords: [
-    'specialty coffee',
-    'slow roast',
-    'single origin',
-    'coffee house',
-    'Mumbai café',
+    'protein shake',
+    'ready to drink protein',
+    'high protein low sugar',
+    'chocolate protein shake',
+    'vanilla protein shake',
+    'strawberry protein shake',
   ],
   openGraph: {
     type: 'website',
@@ -54,21 +47,19 @@ export const metadata: Metadata = {
     title: `${SITE.name} — ${SITE.tagline}`,
     description: SITE.description,
     locale: 'en_IN',
-    images: [
-      { url: '/media/og.jpg', width: 1200, height: 630, alt: `The room at ${SITE.name}` },
-    ],
+    images: [{ url: '/vanilla.png', width: 1672, height: 941, alt: `${SITE.name} Vanilla protein shake` }],
   },
   twitter: {
     card: 'summary_large_image',
     title: `${SITE.name} — ${SITE.tagline}`,
     description: SITE.description,
-    images: ['/media/og.jpg'],
+    images: ['/vanilla.png'],
   },
   robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#f8f5ef',
+  themeColor: '#ffffff',
   colorScheme: 'light',
   width: 'device-width',
   initialScale: 1,
@@ -76,10 +67,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${inter.variable}`}>
+    <html lang="en" className={`${outfit.variable} ${inter.variable}`}>
       <body>
-        {/* The warm pools that light the page. A fixed element rather than a
-            fixed background — see .page-glow in globals.css. */}
         <div aria-hidden className="page-glow" />
 
         <a
@@ -91,7 +80,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <SmoothScroll>
           <Nav />
-          {/* The footer is a sibling of <main>, not part of it. */}
           <main id="main">{children}</main>
           <Footer />
           <Grain />

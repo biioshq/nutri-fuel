@@ -1,47 +1,35 @@
 /**
- * Single source of truth for brand copy, navigation and contact details.
+ * Single source of truth for brand copy and navigation.
  * Nothing in the component tree hard-codes the brand name.
  */
 
 export const SITE = {
-  name: 'CRÈMA HOUSE',
-  nameShort: 'CRÈMA',
-  established: 'EST. MMXIV',
-  tagline: 'Coffee, considered.',
+  name: 'Ajay Protein',
+  wordmark: 'AJAY PROTEIN',
+  tagline: 'Fuel a better you.',
   description:
-    'A slow-roast coffee house where every cup is measured, timed and poured by hand. Single-origin beans, a quiet room, and the patience to do it properly.',
-  url: 'https://cremahouse.example',
+    'Premium ready-to-drink protein shakes. 25g of complete protein, 3g of sugar and zero artificial flavours — in Chocolate, Vanilla and Strawberry.',
+  url: 'https://ajayprotein.example',
+  email: 'hello@ajayprotein.example',
 } as const;
 
+/** Section anchors, in scroll order. Lenis handles the smooth travel. */
 export const NAV_LINKS = [
-  { label: 'Home', href: '/' },
-  { label: 'Story', href: '/story' },
-  { label: 'Menu', href: '/menu' },
-  { label: 'Voices', href: '/voices' },
+  { label: 'Flavours', href: '#flavours' },
+  { label: 'Why Ajay', href: '#why' },
+  { label: 'Nutrition', href: '#nutrition' },
+  { label: 'Results', href: '#results' },
+  { label: 'FAQ', href: '#faq' },
 ] as const;
 
-export const CONTACT = {
-  addressLines: ['14 Ashworth Lane', 'Bandra West, Mumbai 400050'],
-  phone: '+91 22 4000 1400',
-  phoneHref: 'tel:+912240001400',
-  email: 'reserve@cremahouse.example',
-  mapsHref: 'https://maps.google.com/?q=Bandra+West+Mumbai',
-} as const;
+/** Where every in-page "Shop now" lands: the closing order section. */
+export const SHOP_HREF = '#order';
 
-export const HOURS = [
-  { days: 'Monday — Thursday', time: '07:00 — 22:00' },
-  { days: 'Friday — Saturday', time: '07:00 — 00:00' },
-  { days: 'Sunday', time: '08:00 — 21:00' },
-] as const;
+/** The storefront. The order section's buttons are the integration point. */
+export const STORE_URL = 'https://ajayprotein.example/shop';
 
 export const SOCIALS = [
   { label: 'Instagram', href: 'https://instagram.com', icon: 'instagram' },
-  { label: 'Facebook', href: 'https://facebook.com', icon: 'facebook' },
   { label: 'YouTube', href: 'https://youtube.com', icon: 'youtube' },
-] as const;
-
-export const FOOTER_LINKS = [
-  { label: 'Our story', href: '/story' },
-  { label: 'The full menu', href: '/menu' },
-  { label: 'Reservations', href: '/reserve' },
+  { label: 'Facebook', href: 'https://facebook.com', icon: 'facebook' },
 ] as const;

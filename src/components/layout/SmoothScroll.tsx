@@ -15,6 +15,7 @@ import {
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { useIsoLayoutEffect } from '@/hooks/useIsoLayoutEffect';
 import { useMotionOK } from '@/hooks/useMediaQuery';
+import { useScrollTriggerRefresh } from '@/hooks/useGsap';
 
 type ScrollTo = (target: string | number | HTMLElement, options?: { offset?: number }) => void;
 
@@ -41,6 +42,10 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
   const motionOK = useMotionOK();
   const pathname = usePathname();
 
+  // Fonts and images change heights after first paint, and the showcase pins
+  // — every trigger below it has to be re-measured once they land.
+  useScrollTriggerRefresh();
+
   useIsoLayoutEffect(() => {
     // Reduced motion means the OS-native scroll, untouched.
     if (!motionOK) return;
@@ -62,6 +67,12 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       // Native momentum on touch feels better than a simulated one.
       syncTouch: false,
       touchMultiplier: 1.5,
+      // In-page `<a href="#section">` links glide instead of jumping. Under
+      // reduced motion Lenis never exists and the browser's own jump remains.
+      anchors: {
+        duration: 1.2,
+        easing: (t: number) => 1 - Math.pow(1 - t, 4),
+      },
     });
 
     lenisRef.current = instance;
