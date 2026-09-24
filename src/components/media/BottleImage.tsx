@@ -10,6 +10,15 @@ type BottleImageProps = {
   className?: string;
   imageClassName?: string;
   alt?: string;
+  /**
+   * Override the default request. Give the width the *photograph* renders at,
+   * not the frame's: a cover crop draws it far wider than its frame (frame
+   * width ÷ frame aspect × source aspect — about 2.25× for a 4:5 frame over
+   * these sources). Worth setting only for small frames; leave it alone and
+   * the full-resolution file is requested, which is always sharp and never
+   * wrong.
+   */
+  sizes?: string;
 };
 
 /**
@@ -32,6 +41,7 @@ export function BottleImage({
   className,
   imageClassName,
   alt,
+  sizes,
 }: BottleImageProps) {
   const { image } = flavour;
 
@@ -41,7 +51,7 @@ export function BottleImage({
         src={image.src}
         alt={alt ?? `${flavour.name} protein shake`}
         fill
-        sizes={`${image.width}px`}
+        sizes={sizes ?? `${image.width}px`}
         priority={priority}
         quality={90}
         placeholder="blur"

@@ -54,7 +54,7 @@ export const FLAVOURS: readonly Flavour[] = [
     name: 'Vanilla',
     tagline: 'Simple ingredients. Stronger days.',
     description:
-      'Real vanilla bean over a clean, creamy base. The quiet classic — smooth enough for every morning, rich enough for after.',
+      'Real vanilla bean over a clean, creamy base. The quiet classic, smooth enough for every morning and rich enough for after.',
     notes: ['Vanilla bean', 'Creamy', 'All-day'],
     volume: '300 ml',
     image: BOTTLES.vanilla,
@@ -71,7 +71,7 @@ export const FLAVOURS: readonly Flavour[] = [
     name: 'Strawberry',
     tagline: 'Real ingredients. Brighter tomorrows.',
     description:
-      'Sun-ripened strawberries and a soft cream body. Bright, fresh and gently sweet — summer, with 25 grams of protein.',
+      'Sun-ripened strawberries and a soft cream body. Bright, fresh and gently sweet, like summer with 25 grams of protein.',
     notes: ['Real strawberry', 'Fresh & light', 'Anytime'],
     volume: '300 ml',
     image: BOTTLES.strawberry,

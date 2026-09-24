@@ -3,10 +3,10 @@
 import { useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { BackgroundVideo } from '@/components/media/BackgroundVideo';
-import { Magnetic } from '@/components/motion/Magnetic';
 import { Button } from '@/components/ui/button';
 import { gsap, useGsap } from '@/hooks/useGsap';
 import { useMotionOK } from '@/hooks/useMediaQuery';
+import { whenLoadingDone } from '@/lib/loading';
 import { HERO_VIDEO } from '@/lib/media';
 import { SHOP_HREF, SITE } from '@/lib/site';
 
@@ -30,17 +30,24 @@ export function Hero() {
     () => {
       if (!motionOK) return;
 
-      gsap.fromTo(
-        '.hero-media',
-        { opacity: 0, scale: 1.08 },
-        { opacity: 1, scale: 1, duration: 2.2, ease: 'power2.out' }
-      );
+      // Held until the loading screen lifts — played behind it, the arrival
+      // would already be over by the time anyone could see it.
+      const entrance = gsap
+        .timeline({ paused: true })
+        .fromTo(
+          '.hero-media',
+          { opacity: 0, scale: 1.08 },
+          { opacity: 1, scale: 1, duration: 2.2, ease: 'power2.out' },
+          0
+        )
+        .fromTo(
+          '.hero-cta',
+          { opacity: 0, y: 28 },
+          { opacity: 1, y: 0, duration: 1.3, stagger: 0.12, ease: 'expo.out' },
+          0.55
+        );
 
-      gsap.fromTo(
-        '.hero-cta',
-        { opacity: 0, y: 28 },
-        { opacity: 1, y: 0, duration: 1.3, delay: 1, stagger: 0.12, ease: 'expo.out' }
-      );
+      const unsubscribe = whenLoadingDone(() => entrance.play());
 
       // A slow dolly as the page leaves. Scaled up while it travels so no
       // edge of the film is ever exposed.
@@ -68,6 +75,8 @@ export function Hero() {
           scrub: 0.6,
         },
       });
+
+      return () => unsubscribe();
     },
     [motionOK],
     rootRef
@@ -92,42 +101,41 @@ export function Hero() {
       </div>
 
       <h1 id="hero-heading" className="sr-only">
-        {SITE.name} — Premium protein, built for performance
+        {SITE.name}. Premium protein, built for performance
       </h1>
 
-      <div className="hero-actions absolute inset-x-0 bottom-[clamp(1.5rem,5svh,3rem)] z-10 flex items-center justify-center gap-3 px-gutter">
+      {/* No magnetic pull on this pair: side by side, each button chased the
+          cursor into the other and the two collided. They hold their place;
+          the movement lives in the wash and the arrow instead. */}
+      <div className="hero-actions absolute inset-x-0 bottom-[clamp(1.5rem,5svh,3rem)] z-10 flex items-center justify-center gap-4 px-gutter sm:gap-5">
         <span className="hero-cta reveal">
-          <Magnetic strength={0.28} padding={28}>
-            <Button
-              asChild
-              variant="light"
-              size="md"
-              className="gap-3 pr-1.5 pl-5 shadow-[0_2px_6px_rgb(0_0_0/0.12),0_18px_40px_-16px_rgb(0_0_0/0.45)] sm:pl-6"
-            >
-              <a href={SHOP_HREF}>
-                Shop Now
-                <span className="grid size-9 place-items-center rounded-full bg-ink text-canvas transition-transform duration-300 ease-luxe group-hover/btn:translate-x-0.5">
-                  <ArrowRight className="size-3.5" strokeWidth={1.75} />
-                </span>
-              </a>
-            </Button>
-          </Magnetic>
+          <Button
+            asChild
+            variant="light"
+            size="md"
+            className="gap-3 pr-1.5 pl-5 shadow-[0_2px_6px_rgb(0_0_0/0.12),0_18px_40px_-16px_rgb(0_0_0/0.45)] sm:pl-6"
+          >
+            <a href={SHOP_HREF}>
+              Shop Now
+              <span className="grid size-9 place-items-center rounded-full bg-ink text-canvas transition-transform duration-300 ease-luxe group-hover/btn:translate-x-0.5">
+                <ArrowRight className="size-3.5" strokeWidth={1.75} />
+              </span>
+            </a>
+          </Button>
         </span>
 
         <span className="hero-cta reveal">
-          <Magnetic strength={0.28} padding={28}>
-            <Button
-              asChild
-              variant="glass"
-              size="md"
-              className="border-white/55 bg-white/18 px-5 [text-shadow:0_1px_10px_rgb(0_0_0/0.3)] shadow-[inset_0_1px_0_rgb(255_255_255/0.3),0_18px_40px_-18px_rgb(0_0_0/0.4)] sm:px-6"
-            >
-              <a href="#flavours">
-                <span className="sm:hidden">Flavours</span>
-                <span className="hidden sm:inline">Explore Flavours</span>
-              </a>
-            </Button>
-          </Magnetic>
+          <Button
+            asChild
+            variant="glass"
+            size="md"
+            className="border-white/55 bg-white/18 px-5 [text-shadow:0_1px_10px_rgb(0_0_0/0.3)] shadow-[inset_0_1px_0_rgb(255_255_255/0.3),0_18px_40px_-18px_rgb(0_0_0/0.4)] sm:px-6"
+          >
+            <a href="#flavours">
+              <span className="sm:hidden">Flavours</span>
+              <span className="hidden sm:inline">Explore Flavours</span>
+            </a>
+          </Button>
         </span>
       </div>
     </section>

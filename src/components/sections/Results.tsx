@@ -2,8 +2,11 @@
 
 import { useRef, type CSSProperties } from 'react';
 import { Star } from 'lucide-react';
+import { Ambient } from '@/components/motion/Ambient';
 import { Counter } from '@/components/motion/Counter';
+import { Float } from '@/components/motion/Float';
 import { SectionIntro } from '@/components/ui/SectionIntro';
+import { Dumbbell, Shaker } from '@/components/ui/illustrations';
 import { gsap, useGsap } from '@/hooks/useGsap';
 import { useMotionOK } from '@/hooks/useMediaQuery';
 import { RESULTS_STATS, TESTIMONIALS, type Testimonial } from '@/lib/content';
@@ -29,6 +32,10 @@ import { FLAVOURS, type Flavour, type FlavourId } from '@/lib/flavours';
  *   content — so it is hidden from assistive tech as a whole.
  * - Under reduced motion there is no scrub at all: the same block becomes a
  *   native, snapping horizontal scroller, and every card is simply visible.
+ * - A shaker and a dumbbell stand at the far left and right as beige
+ *   watermarks. They are deliberately placed *in* the rail's mask fade, where
+ *   the cards have already dissolved, so the rails appear to glide across
+ *   something rather than across nothing.
  */
 
 const FLAVOUR_BY_ID = Object.fromEntries(FLAVOURS.map((f) => [f.id, f])) as Record<
@@ -37,7 +44,7 @@ const FLAVOUR_BY_ID = Object.fromEntries(FLAVOURS.map((f) => [f.id, f])) as Reco
 >;
 
 const LEDE =
-  'Runners, coaches, climbers and physios — people who read the label before the flavour — on the bottle that earned a permanent place in their routine.';
+  'Runners, coaches, climbers and physios who read the label before the flavour, on the bottle that earned a permanent place in their routine.';
 
 /**
  * Echo cards appended to each rail, switched on only where the viewport is so
@@ -154,6 +161,24 @@ export function Results() {
         { x: () => travel(trackB) },
         { x: 0, ease: 'none', scrollTrigger: scrub() }
       );
+
+      // --- The watermarks, moved on a third, slower track than either rail,
+      // so the section reads as three depths rather than two.
+      gsap.fromTo(
+        '.res-drift',
+        { y: (i: number) => (i === 0 ? 40 : -32) },
+        {
+          y: (i: number) => (i === 0 ? -40 : 32),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1,
+            invalidateOnRefresh: true,
+          },
+        }
+      );
     },
     [motionOK],
     sectionRef
@@ -174,6 +199,26 @@ export function Results() {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[78%] bg-[radial-gradient(60%_55%_at_50%_58%,rgb(246_239_228/0.75)_0%,rgb(250_248_245/0.4)_45%,transparent_72%)]"
       />
+
+      {/* A white section has to stay white, so the ambient layer here is beige
+          at half strength — read as a change of light, not as shapes. */}
+      <Ambient tone="cream" className="-z-10" />
+
+      {/* The drawings hang off the edges and are clipped by this wrapper, so
+          there is no width here for the page to overflow. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="res-drift absolute top-[44%] left-[-4%] w-[clamp(5.5rem,12vw,9.5rem)] sm:left-[-1%] lg:left-[1.5%]">
+          <Float amplitude={16} rotate={2} duration={7.2} phase={0.2}>
+            <Shaker strokeWidth={1.7} className="h-auto w-full text-beige" />
+          </Float>
+        </div>
+
+        <div className="res-drift absolute top-[60%] right-[-5%] w-[clamp(6rem,14vw,11rem)] sm:right-[-1%] lg:right-[1.5%]">
+          <Float amplitude={20} rotate={-2.4} duration={8.4} phase={0.65}>
+            <Dumbbell strokeWidth={1.7} className="h-auto w-full text-beige" />
+          </Float>
+        </div>
+      </div>
 
       <div className="shell">
         <div className="grid gap-y-14 lg:grid-cols-12 lg:items-end lg:gap-x-10">
@@ -304,7 +349,7 @@ function TestimonialCard({ item }: { item: Testimonial }) {
     <figure
       style={tone}
       className={[
-        'group/card card-surface relative isolate flex h-full flex-col rounded-card p-7 xl:p-10',
+        'group/card card-surface relative isolate flex h-full flex-col rounded-card p-6 xl:p-8',
         'transition-transform duration-700 ease-luxe hover:-translate-y-1.5',
         'before:pointer-events-none before:absolute before:-inset-px before:-z-10 before:rounded-[inherit] before:opacity-0',
         'before:shadow-[0_2px_6px_rgb(42_27_19/0.05),0_30px_60px_-28px_rgb(42_27_19/0.26),0_36px_70px_-44px_var(--tone-glow)]',
@@ -324,7 +369,7 @@ function TestimonialCard({ item }: { item: Testimonial }) {
         ))}
       </div>
 
-      <blockquote className="mt-7 sm:mt-8">
+      <blockquote className="mt-5 sm:mt-6">
         <p className="font-display text-[clamp(1.1875rem,1.02rem+0.55vw,1.5625rem)] leading-[1.38] font-light tracking-[-0.012em] text-balance text-ink">
           {item.quote}
         </p>

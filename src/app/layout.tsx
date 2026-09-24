@@ -1,35 +1,36 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Outfit } from 'next/font/google';
+import { Libre_Baskerville } from 'next/font/google';
 import './globals.css';
 
 import { SmoothScroll } from '@/components/layout/SmoothScroll';
 import { Nav } from '@/components/layout/Nav';
+import { Loader } from '@/components/layout/Loader';
 import { Grain } from '@/components/layout/Grain';
 import { Footer } from '@/components/sections/Footer';
 import { SITE } from '@/lib/site';
 
 /**
- * Display: Outfit — a geometric sans, variable, so the 200 used for the huge
- * headings and the 400 used for small numerals come from a single file.
- * Text: Inter, for labels and body copy.
+ * One face for the whole site: Libre Baskerville, a transitional serif drawn
+ * for screens — a wider set and a taller x-height than print Baskerville, so
+ * it holds up at caption sizes as well as at the display sizes.
+ *
+ * It ships 400 and 700 only. Nothing here asks for a lighter weight, and
+ * `font-synthesis-weight: none` in the base layer means a stray `font-light`
+ * renders as 400 rather than as a smeared fake.
  */
-const outfit = Outfit({
+const baskerville = Libre_Baskerville({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-outfit',
-});
-
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-baskerville',
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: `${SITE.name} — ${SITE.tagline}`,
-    template: `%s — ${SITE.name}`,
+    default: `${SITE.name} · ${SITE.tagline}`,
+    template: `%s · ${SITE.name}`,
   },
   description: SITE.description,
   applicationName: SITE.name,
@@ -44,14 +45,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: SITE.name,
-    title: `${SITE.name} — ${SITE.tagline}`,
+    title: `${SITE.name} · ${SITE.tagline}`,
     description: SITE.description,
     locale: 'en_IN',
     images: [{ url: '/vanilla.png', width: 1672, height: 941, alt: `${SITE.name} Vanilla protein shake` }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${SITE.name} — ${SITE.tagline}`,
+    title: `${SITE.name} · ${SITE.tagline}`,
     description: SITE.description,
     images: ['/vanilla.png'],
   },
@@ -67,7 +68,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${outfit.variable} ${inter.variable}`}>
+    <html lang="en" className={baskerville.variable}>
       <body>
         <div aria-hidden className="page-glow" />
 
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
 
         <SmoothScroll>
+          <Loader />
           <Nav />
           <main id="main">{children}</main>
           <Footer />

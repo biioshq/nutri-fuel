@@ -1,4 +1,4 @@
-# Ajay Protein
+# NutriFuel
 
 A single-page site for a premium ready-to-drink protein shake. Next.js 15 (App
 Router), TypeScript, Tailwind v4, GSAP + ScrollTrigger, Lenis, and Motion.
@@ -14,9 +14,14 @@ npm run build && npm start
 
 White first. Warm beige (`#EDE3D6`) and soft cream (`#F6EFE4`) carry the quiet
 surfaces; chocolate, vanilla bean and strawberry pink appear only as accents,
-each owned by its flavour. Outfit at weight 200 for the display sizes — a
-geometric sans whose thin strokes read as precision at 10rem — with Inter for
-everything set small. Shadows are warm, never grey.
+each owned by its flavour. One face throughout: Libre Baskerville, a
+transitional serif drawn for screens, which holds at caption sizes as well as
+at 10rem. It ships 400 and 700 only, so the tracking on the display sizes is
+set for a serif rather than for the geometric sans that came before. Shadows
+are warm, never grey.
+
+Copy is written without em dashes: the page should not read as though it was
+generated.
 
 All tokens live in [`src/app/globals.css`](src/app/globals.css) under `@theme`.
 The tailwind-merge scales in [`src/lib/utils.ts`](src/lib/utils.ts) must be
@@ -26,22 +31,17 @@ kept in step with them.
 
 | Anchor | Section | Signature |
 | --- | --- | --- |
-| `#top` | Hero | Film background, two-tone headline rising from masks, three floating bottles that tilt toward the pointer and spread apart on scroll |
-| `#flavours` | Flavours | Three cards; the section background crossfades to the hovered flavour |
-| `#why` | Why Ajay Protein | Bento grid with self-drawing line icons |
-| `#nutrition` | Nutrition | Flavour switcher with re-tweening figures; Ajay Protein vs a typical shake |
+| `#top` | Hero | The film, full width on every screen shape, with two buttons and nothing over it |
+| `#flavours` | Flavours | Cards arrive stacked out of depth, split into three on a pinned scrub, and flip about their vertical axis on hover |
+| `#protein` | The number | A ring of twenty-five ticks closing in step with the counter, on a dark band |
 | `#showcase` | Showcase | Pinned, scrubbed scene — the bottles fan out from behind one another |
-| `#results` | Results | Two tracks of testimonials gliding in opposite directions |
-| `#faq` | FAQ | Height-animated accordion beside a sticky heading |
+| `#results` | Results | Two rails of testimonials gliding in opposite directions on scroll |
 | `#order` | Order | A dark panel that opens to full bleed as it arrives |
-| `#family` | More from Ajay | Ajay Gym and Ajay Tours and Travels, each card dressed in its poster's own ground |
 
 ## Assets
 
-All in `public/`: `hero.mp4`, `chocolate.png`, `vanilla.png`, `strawberry.png`,
-`logo.png`, and the sister-brand posters `gym.png` and `travel.png` (shown whole,
-never cropped — both have type set in). Note the bottle photographs and the film
-still print the previous brand name on their labels. [`src/lib/media.ts`](src/lib/media.ts) is the manifest.
+All in `public/`: `hero.mp4`, `chocolate.png`, `vanilla.png`, `strawberry.png`
+and `logo.png`. [`src/lib/media.ts`](src/lib/media.ts) is the manifest.
 
 `logo-mark.png` and `src/app/icon.png` are derived from `logo.png`: the glyph
 trimmed and its white ground made transparent, so `Logo` can paint it as a
@@ -59,19 +59,25 @@ photograph is replaced. `next/image` handles format and size negotiation.
 src/
 ├─ app/            layout · page · globals.css (all design tokens) · icon.svg
 ├─ components/
-│  ├─ sections/    Hero · Flavours · WhyUs · Nutrition · Showcase · Results
-│  │                Faq · FinalCta · Footer
-│  ├─ layout/      SmoothScroll · Nav · Grain
+│  ├─ sections/    Hero · Flavours · ProteinStat · Showcase · Results
+│  │                FinalCta · Footer
+│  ├─ layout/      SmoothScroll · Nav · Loader · Grain
 │  ├─ motion/      SplitHeading · Counter · Magnetic · Float · Tilt · Motes
 │  ├─ media/       BackgroundVideo · BottleImage
 │  └─ ui/          button · SectionIntro · Logo · brand-icons
 ├─ hooks/          useGsap · useMediaQuery · useIsoLayoutEffect
-└─ lib/            site · flavours · content · media · split · gsap · pointer · ease · utils
+└─ lib/            site · flavours · content · media · loading · split · gsap · pointer · ease · utils
 ```
 
 **Data, not markup.** Brand copy lives in `lib/site.ts`, flavours in
-`lib/flavours.ts`, and every other piece of page copy in `lib/content.ts`.
-Components render it; none of them hard-code marketing text.
+`lib/flavours.ts`, and the sister brands in `lib/content.ts`. Components
+render it; none of them hard-code marketing text.
+
+**The page is deliberately short.** It is carried by the film, the flavour
+stack, the number, the collection, the testimonial rails and the order panel —
+the explanatory sections (a benefits grid, a nutrition comparison and an FAQ)
+were cut on purpose, and so was a sister-brand block. Keep new copy to a line:
+the quotes on the rails are one sentence each by design.
 
 **Motion ownership.** GSAP owns everything scroll-linked and every entrance;
 Motion is used only for mount/unmount (the mobile navigation). One element is
@@ -109,7 +115,11 @@ that would un-hide it never runs.
 - **This project sits inside a OneDrive-synced folder.** OneDrive contending
   with Next's writes to `.next` can produce 404s on chunks during development.
   If the page loads unstyled, stop the server, delete `.next`, and restart.
-- Never run `next build` while `next dev` is running — they share `.next`.
+- Never run a plain `next build` while `next dev` is running — they share
+  `.next` and corrupt each other, which shows up as sections rendering blank.
+  Use `QA_BUILD=1 npx next build` (and `QA_BUILD=1 npx next start -p 3100`) to
+  check a production build alongside a live dev server: it writes to
+  `.next-qa` instead.
 - The storefront is not wired up: the order section links to `STORE_URL` in
   `lib/site.ts`, which is the integration point.
 - Testimonials, statistics and the "typical shake" comparison are illustrative

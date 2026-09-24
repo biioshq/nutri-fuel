@@ -2,6 +2,7 @@
 
 import { useRef, type ReactNode } from 'react';
 import { SplitHeading, type SplitMode } from '@/components/motion/SplitHeading';
+import { Eyebrow } from '@/components/ui/Eyebrow';
 import { gsap, useGsap } from '@/hooks/useGsap';
 import { useMotionOK } from '@/hooks/useMediaQuery';
 import { cn } from '@/lib/utils';
@@ -47,10 +48,10 @@ export function SectionIntro({
         .timeline({ scrollTrigger: { trigger: rootRef.current, start: 'top 84%', once: true } })
         .fromTo('.intro-eyebrow', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.9 }, 0)
         .fromTo(
-          '.intro-rule',
-          { scaleX: 0 },
-          { scaleX: 1, duration: 1.2, ease: 'power3.inOut' },
-          0.1
+          '.intro-mark',
+          { scale: 0, rotation: -135 },
+          { scale: 1, rotation: 0, duration: 1.3, ease: 'power3.out' },
+          0.15
         )
         .fromTo('.intro-lede', { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 1.2 }, 0.45);
     },
@@ -67,21 +68,9 @@ export function SectionIntro({
         className
       )}
     >
-      <p
-        className={cn(
-          'intro-eyebrow eyebrow reveal flex items-center gap-3',
-          dark && 'text-vanilla'
-        )}
-      >
-        <span
-          aria-hidden
-          className={cn(
-            'intro-rule block h-px w-8 origin-left',
-            dark ? 'bg-vanilla/60' : 'bg-cocoa/50'
-          )}
-        />
+      <Eyebrow tone={tone} className="intro-eyebrow reveal" markClassName="intro-mark">
         {eyebrow}
-      </p>
+      </Eyebrow>
 
       <SplitHeading
         as="h2"

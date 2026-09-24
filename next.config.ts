@@ -3,6 +3,14 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
+  /**
+   * `next build` and `next dev` share `.next` and corrupt each other — a build
+   * run while the dev server is up leaves it serving half-written chunks, and
+   * sections render blank. `QA_BUILD=1 next build` writes somewhere else
+   * instead, so a production check can run alongside a live dev server.
+   */
+  distDir: process.env.QA_BUILD ? '.next-qa' : '.next',
+
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [400, 640, 828, 1080, 1280, 1600, 1920],

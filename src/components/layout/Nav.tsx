@@ -11,6 +11,7 @@ import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { useIsoLayoutEffect } from '@/hooks/useIsoLayoutEffect';
 import { useMotionOK } from '@/hooks/useMediaQuery';
 import { EASE } from '@/lib/ease';
+import { whenLoadingDone } from '@/lib/loading';
 import { NAV_LINKS, SHOP_HREF, SITE, SOCIALS } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
@@ -66,13 +67,18 @@ export function Nav() {
         opacity: 1,
         y: 0,
         duration: 0.9,
-        delay: 0.3,
+        delay: 0.15,
         ease: 'power4.out',
+        paused: true,
         onComplete: () => gsap.set(pill, { clearProps: 'transform' }),
       }
     );
 
+    // The pill arrives with the page, once the loading screen lifts.
+    const unsubscribe = whenLoadingDone(() => tween.play());
+
     return () => {
+      unsubscribe();
       tween.kill();
     };
   }, [motionOK]);
@@ -189,7 +195,11 @@ export function Nav() {
         <div className="shell pt-3 lg:pt-4">
           <div
             className={cn(
-              'nav-pill reveal pointer-events-auto relative mx-auto flex h-16 items-center justify-between gap-6 rounded-full border pr-2.5 pl-5 sm:pl-6',
+              // 56px tall. The right inset, plus the 1px border, matches the
+              // gap above and below whichever control sits last — the 44px
+              // toggle below `lg`, the 40px button from `lg` — so the pill's
+              // end cap and that control stay concentric.
+              'nav-pill reveal pointer-events-auto relative mx-auto flex h-14 items-center justify-between gap-6 rounded-full border pr-1.25 pl-5 sm:pl-6 lg:pr-1.75',
               'transition-[background-color,border-color,box-shadow,color] duration-500 ease-luxe',
               // Over the film the nav is bare type — no surface at all. A soft
               // shadow behind the letters (and the mark) is what keeps white
@@ -229,7 +239,7 @@ export function Nav() {
                     data-href={link.href}
                     aria-current={active === link.href ? 'true' : undefined}
                     className={cn(
-                      'block rounded-full px-4 py-2.5 font-sans text-[0.8125rem] font-medium transition-opacity duration-300',
+                      'block rounded-full px-4 py-2 font-sans text-[0.8125rem] font-medium transition-opacity duration-300',
                       active === link.href ? 'opacity-100' : 'opacity-85 hover:opacity-100'
                     )}
                   >

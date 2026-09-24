@@ -4,6 +4,7 @@ import { useRef, type CSSProperties, type ReactNode } from 'react';
 import { BottleImage } from '@/components/media/BottleImage';
 import { Float } from '@/components/motion/Float';
 import { Tilt } from '@/components/motion/Tilt';
+import { Eyebrow } from '@/components/ui/Eyebrow';
 import { gsap, useGsap } from '@/hooks/useGsap';
 import { useMotionOK } from '@/hooks/useMediaQuery';
 import { FLAVOURS, type Flavour, type FlavourId } from '@/lib/flavours';
@@ -199,10 +200,16 @@ function choreograph(stage: HTMLElement, c: Choreography) {
     .to(sideBottles, { scale: c.resting, duration: 3.6, ease: 'sine.inOut' }, 6.4)
     .fromTo(warm, { opacity: 0 }, { opacity: 1, duration: 3.8, ease: 'sine.inOut' }, 6.2)
     .fromTo(
-      all('.show-rule'),
-      { scaleX: 0, opacity: 0 },
-      { scaleX: 1, opacity: 1, duration: 1.6, ease: 'power3.inOut' },
-      6.6
+      all('.show-chip'),
+      { opacity: 0, scale: 0.9 },
+      { opacity: 1, scale: 1, duration: 1.6, ease: 'power3.out' },
+      6.5
+    )
+    .fromTo(
+      all('.show-mark'),
+      { scale: 0, rotation: -135 },
+      { scale: 1, rotation: 0, duration: 1.8, ease: 'power3.out' },
+      6.7
     )
     .fromTo(
       all('.show-line'),
@@ -308,19 +315,11 @@ export function Showcase() {
 
         {/* ---------- Copy ---------- */}
         <div className="show-copy relative z-30 flex w-full flex-col items-center px-gutter text-center">
-          <p className="eyebrow flex items-center justify-center gap-3">
-            <span
-              aria-hidden
-              className="show-rule reveal block h-px w-8 origin-right bg-linear-to-l from-cocoa/50 to-transparent"
-            />
+          <Eyebrow className="show-chip reveal" markClassName="show-mark">
             <span className="split-line">
               <span className="show-line reveal block">{COPY.eyebrow}</span>
             </span>
-            <span
-              aria-hidden
-              className="show-rule reveal block h-px w-8 origin-left bg-linear-to-r from-cocoa/50 to-transparent"
-            />
-          </p>
+          </Eyebrow>
 
           {/* Height-capped so a short screen keeps the whole scene in view. */}
           <h2

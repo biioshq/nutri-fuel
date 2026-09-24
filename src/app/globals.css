@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 /* ==========================================================================
-   AJAY PROTEIN — design tokens
+   NUTRIFUEL — design tokens
    White first. Warm beige and soft cream carry the quiet surfaces; chocolate,
    vanilla bean and strawberry appear only as accents, each owned by its
    flavour. Nothing is loud, and nothing is flat.
@@ -39,8 +39,8 @@
      Display: Outfit — a geometric sans held at weight 200 for the very
      large sizes, where thin strokes read as precision rather than fragility.
      Text: Inter, for the labels and body copy. */
-  --font-display: var(--font-outfit), ui-sans-serif, system-ui, -apple-system, 'Helvetica Neue', sans-serif;
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-baskerville), 'Iowan Old Style', Georgia, serif;
+  --font-sans: var(--font-baskerville), 'Iowan Old Style', Georgia, serif;
 
   /* Fluid scale. Line-height and tracking tighten as size grows. */
   --text-micro: 0.6875rem;
@@ -59,19 +59,19 @@
 
   --text-h3: clamp(1.5rem, 1.15rem + 1.3vw, 2.375rem);
   --text-h3--line-height: 1.08;
-  --text-h3--letter-spacing: -0.02em;
+  --text-h3--letter-spacing: -0.005em;
 
   --text-h2: clamp(2.6rem, 1.3rem + 5vw, 6.75rem);
   --text-h2--line-height: 0.98;
-  --text-h2--letter-spacing: -0.045em;
+  --text-h2--letter-spacing: -0.014em;
 
   --text-h1: clamp(3.1rem, 1.2rem + 7.4vw, 10rem);
   --text-h1--line-height: 0.92;
-  --text-h1--letter-spacing: -0.055em;
+  --text-h1--letter-spacing: -0.018em;
 
   --text-mega: clamp(4rem, 1rem + 12vw, 16rem);
   --text-mega--line-height: 0.86;
-  --text-mega--letter-spacing: -0.06em;
+  --text-mega--letter-spacing: -0.022em;
 
   --tracking-luxe: 0.26em;
 
@@ -114,6 +114,34 @@
   50% {
     opacity: 0.9;
     transform: scale(1.6);
+  }
+}
+
+/* The eyebrow chip's glint: one quick pass, then a long rest. */
+@keyframes chip-glint {
+  0% {
+    transform: translateX(-120%);
+  }
+  22%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+/* A quarter turn with a dip in the middle. The star is four-fold symmetric,
+   so 90° is exactly where it began and the loop has no seam. */
+@keyframes chip-twinkle {
+  0% {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    opacity: 0.72;
+    transform: rotate(45deg) scale(0.66);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(90deg) scale(1);
   }
 }
 
@@ -183,7 +211,7 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    font-weight: 200;
+    font-weight: 400;
     color: var(--color-ink);
     margin: 0;
     text-wrap: balance;
@@ -288,10 +316,10 @@
    the wordmark, oversized numerals, statistics. */
 @utility display-face {
   font-family: var(--font-display);
-  font-weight: 200;
+  font-weight: 400;
   color: var(--color-ink);
-  line-height: 0.92;
-  letter-spacing: -0.04em;
+  line-height: 0.98;
+  letter-spacing: -0.012em;
 }
 
 /* Uppercase micro-label used above every section heading. */
@@ -303,6 +331,130 @@
   letter-spacing: var(--tracking-luxe);
   text-transform: uppercase;
   color: var(--color-cocoa);
+}
+
+/* The chip an eyebrow is set in (see `ui/Eyebrow`): a gradient edge, the
+   faintest fill, a star, and a glint that crosses it now and then. Tones are
+   variables, so the dark chip is a handful of reassignments rather than a
+   second rule set. No backdrop-filter: one of these stands on a plane inside
+   the order panel's 3D room, where a backdrop has nothing honest to blur.
+   Padding is in em, so the chip scales with the label it carries. */
+@utility eyebrow-chip {
+  --chip-fill: linear-gradient(180deg, #ffffff 0%, rgb(246 239 228 / 0.92) 100%);
+  --chip-edge: linear-gradient(
+    115deg,
+    rgb(154 106 79 / 0.5) 0%,
+    rgb(220 205 185 / 0.75) 30%,
+    rgb(255 255 255 / 0.95) 52%,
+    rgb(220 205 185 / 0.75) 72%,
+    rgb(154 106 79 / 0.4) 100%
+  );
+  /* Warm, not white: a white glint has no headroom on a white chip, and a
+     pass of vanilla across it is the one light that still reads. */
+  --chip-glint: rgb(233 220 196 / 0.85);
+  --chip-star: var(--color-cocoa-lit);
+  --chip-halo: rgb(154 106 79 / 0.55);
+
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8em;
+  padding: 0.85em 1.4em 0.8em 1.1em;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: var(--chip-fill);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    0 1px 2px rgb(42 27 19 / 0.05),
+    0 12px 26px -16px rgb(107 68 48 / 0.5);
+
+  &[data-tone='dark'] {
+    --chip-fill: linear-gradient(180deg, rgb(246 239 228 / 0.1) 0%, rgb(246 239 228 / 0.03) 100%);
+    --chip-edge: linear-gradient(
+      115deg,
+      rgb(233 220 196 / 0.5) 0%,
+      rgb(233 220 196 / 0.12) 34%,
+      rgb(246 239 228 / 0.6) 52%,
+      rgb(233 220 196 / 0.12) 70%,
+      rgb(233 220 196 / 0.4) 100%
+    );
+    --chip-glint: rgb(246 239 228 / 0.2);
+    --chip-star: var(--color-cream);
+    --chip-halo: rgb(233 220 196 / 0.8);
+    box-shadow:
+      inset 0 1px 0 rgb(246 239 228 / 0.1),
+      0 14px 30px -18px rgb(0 0 0 / 0.7);
+  }
+
+  /* The edge: a gradient ring cut out of a full-size layer, so it can be a
+     gradient at all without an opaque fill hiding whatever sits behind. */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    padding: 1px;
+    border-radius: inherit;
+    background: var(--chip-edge);
+    -webkit-mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+    -webkit-mask-clip: content-box, border-box;
+    -webkit-mask-composite: xor;
+    mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+    mask-clip: content-box, border-box;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* The glint: a band of light that crosses the chip every few seconds, as if
+     the page had tipped under a lamp. Transform only, so it never repaints.
+     It passes *under* the edge (z -2 against the ring's -1, both still above
+     the chip's own fill), so the outline stays crisp while the light moves. */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background: linear-gradient(105deg, transparent 28%, var(--chip-glint) 50%, transparent 72%);
+    transform: translateX(-120%);
+    animation: chip-glint 7s var(--ease-drift) 1.6s infinite;
+    pointer-events: none;
+  }
+
+  /* The star's wrapper belongs to a section timeline; the star inside it
+     belongs to this cycle — never the same transform twice. */
+  & .eyebrow-mark {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 1.1em;
+    height: 1.1em;
+  }
+
+  /* An HTML span, not the svg itself, so the twinkle stays on the compositor
+     at every zoom (see `ui/Eyebrow`). */
+  & .eyebrow-star {
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: var(--chip-star);
+    animation: chip-twinkle 5.2s ease-in-out infinite;
+  }
+
+  & .eyebrow-star > svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 0 0.35em var(--chip-halo));
+  }
+
+  /* Tracking adds space after the last letter too; hand it back so the
+     label sits optically centred in its chip. */
+  & .eyebrow-label {
+    position: relative;
+    margin-right: calc(var(--tracking-luxe) * -1);
+  }
 }
 
 /* Frosted light glass — for surfaces that sit over imagery or colour. */

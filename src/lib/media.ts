@@ -1,6 +1,6 @@
 /**
- * Every media asset on the site: the film, the three bottle photographs, the
- * brand mark and the two sister-brand posters.
+ * Every media asset on the site: the film, the three bottle photographs and
+ * the brand mark.
  *
  * The bottle photographs are full art-directed frames — background, splash,
  * and a column of type at each side — not cut-outs. `focus` is the
@@ -24,19 +24,13 @@ export const MAX_FRAME_ASPECT = 0.8;
 
 export const HERO_VIDEO = '/hero.mp4';
 
-/** Sister-brand posters. Both are 3:2 artwork with type set in, so they are always shown whole. */
-export const VENTURE_IMAGES = {
-  gym: { src: '/gym.png', width: 1536, height: 1024 },
-  travel: { src: '/travel.png', width: 1536, height: 1024 },
-} as const;
-
 /**
  * The brand mark: `logo.png` trimmed to the glyph with its white ground turned
  * into transparency, so it can be used as a mask and take any colour.
  * `logo.png` stays the untouched original; the favicon (app/icon.png) is
  * derived from it too.
  */
-export const LOGO_MARK = { src: '/logo-mark.png', width: 323, height: 256 } as const;
+export const LOGO_MARK = { src: '/logo-mark.png', width: 358, height: 256 } as const;
 
 export const BOTTLES = {
   chocolate: {
