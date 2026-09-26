@@ -130,17 +130,21 @@ export function Footer() {
         stagger: 0.75,
       });
 
+      // Played, not scrubbed. A scrub only completes if the page can scroll to
+      // the exact end it measured at load, and with resize refreshes switched
+      // off (lib/gsap.ts) a laptop whose window changed after load could stop
+      // short and leave the wordmark part-filled. A timed wipe always lands.
       gsap.fromTo(
         '.foot-wordmark-fill',
         { clipPath: 'inset(0% 100% 0% 0%)' },
         {
           clipPath: 'inset(0% 0% 0% 0%)',
-          ease: 'none',
+          duration: 1.8,
+          ease: 'power2.inOut',
           scrollTrigger: {
             trigger: '.foot-wordmark',
-            start: 'top 96%',
-            end: 'bottom bottom',
-            scrub: 0.8,
+            start: 'top 88%',
+            toggleActions: 'play none none reverse',
           },
         }
       );
@@ -263,11 +267,16 @@ export function Footer() {
         {/* Em-based top padding keeps the glyphs inside the gradient's box. */}
         <div className="relative pt-[0.12em] text-center font-display text-[11.5vw] leading-[0.9] tracking-[-0.018em]">
           <span className="block text-ink/[0.05]">{SITE.wordmark}</span>
+          {/* The clip and the gradient text are on separate elements: Safari
+              mis-paints `background-clip: text` when a `clip-path` animates on
+              the same box. */}
           <span
-            className="foot-wordmark-fill text-cocoa-gradient absolute inset-0 block pt-[0.12em]"
-            style={{ clipPath: motionOK ? 'inset(0% 100% 0% 0%)' : 'none', opacity: 0.9 }}
+            className="foot-wordmark-fill absolute inset-0 block"
+            style={{ clipPath: motionOK ? 'inset(0% 100% 0% 0%)' : 'none' }}
           >
-            {SITE.wordmark}
+            <span className="text-cocoa-gradient block pt-[0.12em]" style={{ opacity: 0.9 }}>
+              {SITE.wordmark}
+            </span>
           </span>
         </div>
 
