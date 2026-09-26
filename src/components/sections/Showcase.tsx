@@ -324,7 +324,10 @@ export function Showcase() {
           {/* Height-capped so a short screen keeps the whole scene in view. */}
           <h2
             id="showcase-heading"
-            className="mt-[clamp(0.75rem,2.2svh,1.5rem)] text-h2 text-ink"
+            // One line from `md` up, always: without `nowrap` the balanced
+            // wrap could break it in two for the first paint (fallback font,
+            // Safari's intrinsic sizing) and snap to one line a moment later.
+            className="mt-[clamp(0.75rem,2.2svh,1.5rem)] text-h2 text-ink md:whitespace-nowrap"
             style={{ fontSize: 'min(var(--text-h2), 8.5svh)' }}
           >
             <span className="split-line md:inline-block">
