@@ -1,4 +1,4 @@
-import { BOTTLES, type BottleAsset } from '@/lib/media';
+import { BOTTLES, CUTOUTS, type BottleAsset } from '@/lib/media';
 
 export type FlavourId = keyof typeof BOTTLES;
 
@@ -11,6 +11,8 @@ export type Flavour = {
   notes: readonly string[];
   volume: string;
   image: BottleAsset;
+  /** The same bottle with a transparent ground, for standing in a scene. */
+  cutout: { readonly src: string; readonly width: number; readonly height: number };
   nutrition: {
     protein: number;
     calories: number;
@@ -41,6 +43,7 @@ export const FLAVOURS: readonly Flavour[] = [
     notes: ['Dutch cocoa', 'Velvet finish', 'Post-training'],
     volume: '300 ml',
     image: BOTTLES.chocolate,
+    cutout: CUTOUTS.chocolate,
     nutrition: { protein: 25, calories: 170, sugar: 3, carbs: 7, fat: 3.5 },
     tone: {
       accent: '#8a5a40',
@@ -58,6 +61,7 @@ export const FLAVOURS: readonly Flavour[] = [
     notes: ['Vanilla bean', 'Creamy', 'All-day'],
     volume: '300 ml',
     image: BOTTLES.vanilla,
+    cutout: CUTOUTS.vanilla,
     nutrition: { protein: 25, calories: 160, sugar: 3, carbs: 6, fat: 3 },
     tone: {
       accent: '#b8976a',
@@ -75,6 +79,7 @@ export const FLAVOURS: readonly Flavour[] = [
     notes: ['Real strawberry', 'Fresh & light', 'Anytime'],
     volume: '300 ml',
     image: BOTTLES.strawberry,
+    cutout: CUTOUTS.strawberry,
     nutrition: { protein: 25, calories: 150, sugar: 3, carbs: 6, fat: 2.5 },
     tone: {
       accent: '#df8795',

@@ -25,6 +25,25 @@ export const MAX_FRAME_ASPECT = 0.8;
 export const HERO_VIDEO = '/hero.mp4';
 
 /**
+ * The cut-outs: the same three bottles again, but photographed against
+ * nothing, so they arrive with real transparency and their splash intact.
+ * Nothing crops these — they are objects, not framed pictures, which is what
+ * lets them stand in the order panel's room rather than hang on its wall.
+ * Each carries its own lean (chocolate left, vanilla upright, strawberry
+ * right), so the panel does not rotate them further.
+ *
+ * Replacing the art? Give the file a new name. The image optimizer caches
+ * each URL for 30 days (`minimumCacheTTL`), so a file swapped in under an old
+ * name keeps serving the old picture — which is exactly what happened when
+ * these replaced the first `*-3d.png` set.
+ */
+export const CUTOUTS = {
+  chocolate: { src: '/order-chocolate.png', width: 1346, height: 1168 },
+  vanilla: { src: '/order-vanilla.png', width: 1265, height: 1243 },
+  strawberry: { src: '/order-strawberry.png', width: 1346, height: 1168 },
+} as const;
+
+/**
  * The brand mark: `logo.png` trimmed to the glyph with its white ground turned
  * into transparency, so it can be used as a mask and take any colour.
  * `logo.png` stays the untouched original; the favicon (app/icon.png) is

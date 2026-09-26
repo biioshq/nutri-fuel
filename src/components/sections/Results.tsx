@@ -6,7 +6,7 @@ import { Ambient } from '@/components/motion/Ambient';
 import { Counter } from '@/components/motion/Counter';
 import { Float } from '@/components/motion/Float';
 import { SectionIntro } from '@/components/ui/SectionIntro';
-import { Dumbbell, Shaker } from '@/components/ui/illustrations';
+import { Dumbbell } from '@/components/ui/illustrations';
 import { gsap, useGsap } from '@/hooks/useGsap';
 import { useMotionOK } from '@/hooks/useMediaQuery';
 import { RESULTS_STATS, TESTIMONIALS, type Testimonial } from '@/lib/content';
@@ -32,10 +32,10 @@ import { FLAVOURS, type Flavour, type FlavourId } from '@/lib/flavours';
  *   content — so it is hidden from assistive tech as a whole.
  * - Under reduced motion there is no scrub at all: the same block becomes a
  *   native, snapping horizontal scroller, and every card is simply visible.
- * - A shaker and a dumbbell stand at the far left and right as beige
- *   watermarks. They are deliberately placed *in* the rail's mask fade, where
- *   the cards have already dissolved, so the rails appear to glide across
- *   something rather than across nothing.
+ * - A dumbbell stands at the far right as a beige watermark. It is
+ *   deliberately placed *in* the rail's mask fade, where the cards have
+ *   already dissolved, so the rails appear to glide across something rather
+ *   than across nothing.
  */
 
 const FLAVOUR_BY_ID = Object.fromEntries(FLAVOURS.map((f) => [f.id, f])) as Record<
@@ -166,9 +166,9 @@ export function Results() {
       // so the section reads as three depths rather than two.
       gsap.fromTo(
         '.res-drift',
-        { y: (i: number) => (i === 0 ? 40 : -32) },
+        { y: -32 },
         {
-          y: (i: number) => (i === 0 ? -40 : 32),
+          y: 32,
           ease: 'none',
           scrollTrigger: {
             trigger: sectionRef.current,
@@ -204,15 +204,9 @@ export function Results() {
           at half strength — read as a change of light, not as shapes. */}
       <Ambient tone="cream" className="-z-10" />
 
-      {/* The drawings hang off the edges and are clipped by this wrapper, so
+      {/* The drawing hangs off the edge and is clipped by this wrapper, so
           there is no width here for the page to overflow. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="res-drift absolute top-[44%] left-[-4%] w-[clamp(5.5rem,12vw,9.5rem)] sm:left-[-1%] lg:left-[1.5%]">
-          <Float amplitude={16} rotate={2} duration={7.2} phase={0.2}>
-            <Shaker strokeWidth={1.7} className="h-auto w-full text-beige" />
-          </Float>
-        </div>
-
         <div className="res-drift absolute top-[60%] right-[-5%] w-[clamp(6rem,14vw,11rem)] sm:right-[-1%] lg:right-[1.5%]">
           <Float amplitude={20} rotate={-2.4} duration={8.4} phase={0.65}>
             <Dumbbell strokeWidth={1.7} className="h-auto w-full text-beige" />

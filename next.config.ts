@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
    * sections render blank. `QA_BUILD=1 next build` writes somewhere else
    * instead, so a production check can run alongside a live dev server.
    */
-  distDir: process.env.QA_BUILD ? '.next-qa' : '.next',
+  distDir: process.env.QA_DIR ?? (process.env.QA_BUILD ? '.next-qa' : '.next'),
 
   images: {
     formats: ['image/avif', 'image/webp'],

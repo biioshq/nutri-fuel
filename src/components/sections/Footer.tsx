@@ -1,12 +1,11 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, type RefObject } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '@/components/ui/brand-icons';
-import { Dumbbell, Kettlebell, Shaker } from '@/components/ui/illustrations';
+import { Shaker } from '@/components/ui/illustrations';
 import { Logo } from '@/components/ui/Logo';
 import { Float } from '@/components/motion/Float';
-import { Tilt } from '@/components/motion/Tilt';
 import { useSmoothScroll } from '@/components/layout/SmoothScroll';
 import { gsap, useGsap } from '@/hooks/useGsap';
 import { useIsoLayoutEffect } from '@/hooks/useIsoLayoutEffect';
@@ -35,14 +34,23 @@ const ICONS = {
  */
 export function Footer() {
   const rootRef = useRef<HTMLElement>(null);
-  const liquidRef = useRef<SVGGElement>(null);
+  // One per bottle: an SVG id is document-global, so each shaker needs its
+  // own clip path and gradient, and therefore its own handle.
+  const liquidLeftRef = useRef<SVGGElement>(null);
+  const liquidRightRef = useRef<SVGGElement>(null);
   const { scrollTo } = useSmoothScroll();
   const motionOK = useMotionOK();
   const finePointer = useHasFinePointer();
 
   useGsap(
     () => {
-      if (!motionOK) return;
+      if (!motionOK) {
+        // Poured, still, and visible: the composition has to be complete for
+        // anyone who has asked the page to stop moving.
+        gsap.set('.foot-liquid', { opacity: 1, y: 12 });
+        gsap.set('.foot-ball', { opacity: 0.75 });
+        return;
+      }
 
       gsap.fromTo(
         '.foot-col',
@@ -57,21 +65,9 @@ export function Footer() {
         }
       );
 
-      gsap.fromTo(
-        '.foot-rule',
-        { scaleX: 0 },
-        {
-          scaleX: 1,
-          duration: 1.6,
-          ease: 'power3.inOut',
-          scrollTrigger: { trigger: '.foot-rule', start: 'top 96%', once: true },
-        }
-      );
-
-      // --- Each drawing has something of its own to do ------------------
-      // Drifting is not the same as being alive. A swing is a pendulum, a rep
-      // has a top and a rest, and a shaker is still between shakes: the three
-      // rhythms differ in length and in shape, so they never fall into step.
+      // --- The wordmark and its two bottles -----------------------------
+      // The drawings are furniture for the wordmark now, not a row of their
+      // own: one either side, filling as the page ends.
 
       // They draw themselves on as the footer arrives.
       gsap.fromTo(
@@ -86,43 +82,43 @@ export function Footer() {
         }
       );
 
-      // The kettlebell swings from its handle, not from its middle.
+      // THE POUR. Both bottles fill as the footer arrives, and empty again if
+      // the reader scrolls back up: the liquid block is taller than the glass
+      // and slides up into it behind the clip, so y 150 is empty and y 12 is
+      // full. A scrub rather than a loop, because the reader is the one
+      // pouring it.
+      gsap.set('.foot-liquid', { opacity: 1 });
       gsap.fromTo(
-        '.foot-swing',
-        { rotation: -10 },
+        '.foot-liquid',
+        { y: 150 },
         {
-          rotation: 10,
-          duration: 2.7,
-          ease: 'sine.inOut',
-          yoyo: true,
-          repeat: -1,
-          transformOrigin: '50% 8%',
+          y: 12,
+          ease: 'none',
+          scrollTrigger: {
+            // Measured on the footer, and ending where the page itself ends:
+            // `bottom bottom` is the last scroll position that exists, so the
+            // glass is exactly full when the reader can go no further. Ranges
+            // that finish earlier left it stuck at two-thirds.
+            trigger: rootRef.current,
+            start: 'top bottom',
+            end: 'bottom bottom',
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+          },
         }
       );
 
-      // The dumbbell works a set: lift, hold at the top, lower, breathe.
-      gsap
-        .timeline({ repeat: -1, defaults: { transformOrigin: '50% 50%' } })
-        .to('.foot-rep', { rotation: -16, y: -11, duration: 0.75, ease: 'power2.out' })
-        .to('.foot-rep', { rotation: -16, duration: 0.3 })
-        .to('.foot-rep', { rotation: 0, y: 0, duration: 0.95, ease: 'power1.inOut' })
-        .to('.foot-rep', { rotation: 0, duration: 0.9 });
-
-      // Part-full at rest: the liquid block is taller than the bottle and
-      // slides up into it, so a smaller number is a fuller shaker.
-      gsap.set(liquidRef.current, { y: 74 });
-
-      // The shaker is shaken every few seconds, and the liquid answers a beat
-      // late, the way liquid does.
-      gsap
-        .timeline({ repeat: -1, repeatDelay: 4.4, defaults: { transformOrigin: '50% 12%' } })
-        .to('.foot-shake', { rotation: 8, duration: 0.13, ease: 'power2.out' })
-        .to('.foot-shake', { rotation: -7, duration: 0.12, ease: 'power2.inOut' })
-        .to('.foot-shake', { rotation: 5, duration: 0.11, ease: 'power2.inOut' })
-        .to('.foot-shake', { rotation: -3, duration: 0.11, ease: 'power2.inOut' })
-        .to('.foot-shake', { rotation: 0, duration: 0.6, ease: 'power3.out' })
-        .to(liquidRef.current, { y: 65, duration: 0.22, ease: 'power2.out' }, 0.06)
-        .to(liquidRef.current, { y: 74, duration: 0.9, ease: 'power2.out' }, 0.32);
+      // The mixing ball shows once there is something for it to sit in.
+      gsap.fromTo(
+        '.foot-ball',
+        { opacity: 0 },
+        {
+          opacity: 0.75,
+          duration: 0.7,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: '.foot-wordmark', start: 'top 82%', once: true },
+        }
+      );
 
       // Bubbles keep rising the whole time.
       gsap.to('.foot-bubble', {
@@ -133,24 +129,6 @@ export function Footer() {
         repeat: -1,
         stagger: 0.75,
       });
-
-      // The drawings move against the page, and against each other: the
-      // reader arrives at a footer that is still settling.
-      gsap.fromTo(
-        '.foot-drift',
-        { y: (i: number) => [44, -34, 26][i] ?? 0 },
-        {
-          y: (i: number) => [-44, 34, -26][i] ?? 0,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: rootRef.current,
-            start: 'top bottom',
-            end: 'bottom bottom',
-            scrub: 1,
-            invalidateOnRefresh: true,
-          },
-        }
-      );
 
       gsap.fromTo(
         '.foot-wordmark-fill',
@@ -185,7 +163,7 @@ export function Footer() {
     const wakes = Array.from(root.querySelectorAll<HTMLElement>('.foot-wake'));
     if (wakes.length === 0) return;
 
-    const rest = wakes.map((el) => Number(el.style.opacity) || 0.08);
+    const rest = wakes.map((el) => Number(el.style.opacity) || 0.42);
     const fade = wakes.map((el) =>
       gsap.quickTo(el, 'opacity', { duration: 0.6, ease: 'power3.out' })
     );
@@ -206,8 +184,8 @@ export function Footer() {
           const near = Math.max(0, 1 - Math.hypot(dx, dy) / REACH);
           // Squared, so it wakes late and then quickly.
           const t = near * near;
-          fade[i]?.(rest[i]! + t * 0.13);
-          grow[i]?.(1 + t * 0.07);
+          fade[i]?.(Math.min(1, rest[i]! + t * 0.34));
+          grow[i]?.(1 + t * 0.06);
         });
       },
       reset: () => {
@@ -220,75 +198,9 @@ export function Footer() {
   }, [motionOK, finePointer]);
 
   return (
-    <footer ref={rootRef} className="relative isolate overflow-hidden bg-canvas pt-section">
-      {/* Behind everything, clipped by the footer, and never in the way of a
-          pointer: `Tilt` reads cursor coordinates from the shared store, so it
-          leans without needing to be hoverable itself.
-
-          Five wrappers, five owners of one transform each: drift (scroll),
-          Tilt (pointer), Float (idle), wake (the cursor coming near), and the
-          innermost, which is the drawing's own behaviour. */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="foot-drift absolute top-[14%] left-[-4%] w-[clamp(4.5rem,11vw,9rem)] sm:left-[2%] lg:left-[5%]">
-          <Tilt max={13} perspective={900}>
-            <Float amplitude={13} rotate={0} duration={6.2} phase={0.1}>
-              <div className="foot-wake" style={{ opacity: 0.075 }}>
-                <div className="foot-swing">
-                  <Kettlebell
-                    drawClass="foot-draw"
-                    strokeWidth={1.7}
-                    className="h-auto w-full text-ink"
-                  />
-                </div>
-              </div>
-            </Float>
-          </Tilt>
-        </div>
-
-        <div className="foot-drift absolute top-[30%] right-[-6%] w-[clamp(5.5rem,13vw,11rem)] sm:right-[-1%] lg:right-[4%]">
-          <Tilt max={13} perspective={900}>
-            <Float amplitude={18} rotate={-1.4} duration={7.4} phase={0.45}>
-              <div className="foot-wake" style={{ opacity: 0.085 }}>
-                <div className="foot-shake">
-                  <Shaker
-                    drawClass="foot-draw"
-                    strokeWidth={1.6}
-                    className="h-auto w-full text-ink"
-                    fill={{
-                      ref: liquidRef,
-                      idPrefix: 'foot',
-                      liquidClass: 'foot-liquid',
-                      bubbleClass: 'foot-bubble',
-                      ballClass: 'foot-ball',
-                    }}
-                  />
-                </div>
-              </div>
-            </Float>
-          </Tilt>
-        </div>
-
-        {/* Dropped on phones: at that width the wordmark already owns the
-            middle of the footer and a third drawing is a crowd. */}
-        <div className="foot-drift absolute right-[27%] bottom-[30%] hidden w-[clamp(5rem,9vw,8rem)] md:block">
-          <Tilt max={15} perspective={900}>
-            <Float amplitude={10} rotate={0} duration={5.6} phase={0.75}>
-              <div className="foot-wake" style={{ opacity: 0.07 }}>
-                <div className="foot-rep">
-                  <Dumbbell
-                    drawClass="foot-draw"
-                    strokeWidth={1.7}
-                    className="h-auto w-full text-ink"
-                  />
-                </div>
-              </div>
-            </Float>
-          </Tilt>
-        </div>
-      </div>
-
+    <footer ref={rootRef} className="relative isolate overflow-hidden bg-canvas pt-[clamp(4rem,10vh,6.5rem)]">
       <div className="shell">
-        <div className="foot-top flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
+        <div className="foot-top flex flex-col gap-7 lg:flex-row lg:items-start lg:justify-between">
           <div className="foot-col reveal">
             <a href="#top" aria-label={`${SITE.name}, back to top`} className="inline-block text-ink">
               <Logo />
@@ -335,12 +247,21 @@ export function Footer() {
           </ul>
         </div>
 
-        <div className="foot-rule hairline mt-14 origin-left lg:mt-20" />
       </div>
 
-      <div aria-hidden className="foot-wordmark relative mt-10 overflow-hidden select-none lg:mt-14">
+      {/* THE WORDMARK, FLANKED.
+          A bottle either side, filling as the footer arrives and emptying if
+          the reader goes back up, with the bubbles rising inside exactly as
+          they do on the loading screen. The page opens on this drawing and
+          closes on it. */}
+      <div
+        aria-hidden
+        className="foot-wordmark relative mt-10 flex items-center justify-center gap-[clamp(0.5rem,2vw,2.75rem)] overflow-hidden py-6 select-none lg:mt-14"
+      >
+        <FooterBottle liquidRef={liquidLeftRef} idPrefix="foot-l" phase={0.1} />
+
         {/* Em-based top padding keeps the glyphs inside the gradient's box. */}
-        <div className="relative pt-[0.12em] text-center font-display text-[13vw] leading-[0.88] tracking-[-0.018em]">
+        <div className="relative pt-[0.12em] text-center font-display text-[11.5vw] leading-[0.9] tracking-[-0.018em]">
           <span className="block text-ink/[0.05]">{SITE.wordmark}</span>
           <span
             className="foot-wordmark-fill text-cocoa-gradient absolute inset-0 block pt-[0.12em]"
@@ -349,9 +270,11 @@ export function Footer() {
             {SITE.wordmark}
           </span>
         </div>
+
+        <FooterBottle liquidRef={liquidRightRef} idPrefix="foot-r" phase={0.55} mirrored />
       </div>
 
-      <div className="shell flex flex-col-reverse items-center gap-5 border-t border-hair py-8 sm:flex-row sm:justify-between">
+      <div className="shell flex flex-col-reverse items-center gap-4 border-t border-hair py-8 sm:flex-row sm:justify-between">
         <p
           className="text-center font-sans text-micro text-faint uppercase sm:text-left"
           suppressHydrationWarning
@@ -373,5 +296,43 @@ export function Footer() {
           </button>
       </div>
     </footer>
+  );
+}
+
+/**
+ * One of the two bottles beside the wordmark.
+ *
+ * `idPrefix` is not decoration: the clip path and the liquid gradient inside
+ * the drawing become document-global ids, so two shakers sharing a prefix
+ * would share one clip and the second would fill from the first one's shape.
+ */
+function FooterBottle({
+  liquidRef,
+  idPrefix,
+  phase,
+  mirrored = false,
+}: {
+  liquidRef: RefObject<SVGGElement | null>;
+  idPrefix: string;
+  phase: number;
+  mirrored?: boolean;
+}) {
+  return (
+    <div className="foot-wake shrink-0" style={{ opacity: 0.5 }}>
+      <Float amplitude={9} rotate={0} duration={mirrored ? 6.8 : 7.6} phase={phase}>
+        <Shaker
+          drawClass="foot-draw"
+          strokeWidth={2.2}
+          className={`h-[clamp(4rem,11vw,9.5rem)] w-auto text-cocoa${mirrored ? ' -scale-x-100' : ''}`}
+          fill={{
+            ref: liquidRef,
+            idPrefix,
+            liquidClass: 'foot-liquid',
+            bubbleClass: 'foot-bubble',
+            ballClass: 'foot-ball',
+          }}
+        />
+      </Float>
+    </div>
   );
 }

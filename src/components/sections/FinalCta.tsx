@@ -2,7 +2,7 @@
 
 import { useRef, type CSSProperties } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { BottleImage } from '@/components/media/BottleImage';
+import Image from 'next/image';
 import { Float } from '@/components/motion/Float';
 import { GradientLoop } from '@/components/motion/GradientLoop';
 import { Magnetic } from '@/components/motion/Magnetic';
@@ -149,16 +149,32 @@ const RIM_REACH = 480;
  * `z` stands each bottle off the face — the centre one furthest forward — so
  * the lean moves them against the type behind them and they read as objects
  * in the room rather than a photograph printed on it.
+ *
+ * No rotation here: the art carries its own lean (chocolate tipped left,
+ * vanilla upright, strawberry tipped right), which also swings each side
+ * bottle's splash outward, clear of the centre one.
  */
 const FAN = [
-  { width: 'w-[26vw] sm:w-[clamp(7.5rem,15.5vw,14.5rem)]', rotate: -9, lift: '', z: 62 },
   {
-    width: 'w-[31vw] sm:w-[clamp(9rem,19vw,17.5rem)]',
-    rotate: 0,
-    lift: '-translate-y-[8%]',
-    z: 108,
+    width: 'w-[38vw] sm:w-[clamp(11rem,23vw,21rem)]',
+    lift: 'translate-y-[5%]',
+    z: 40,
+    // The cut-outs carry their own splash, so they are meant to overlap:
+    // three rectangles with gaps between them would read as three photographs.
+    overlap: '-mr-[8vw] sm:-mr-[3.5vw]',
   },
-  { width: 'w-[26vw] sm:w-[clamp(7.5rem,15.5vw,14.5rem)]', rotate: 9, lift: '', z: 62 },
+  {
+    width: 'w-[47vw] sm:w-[clamp(14rem,29vw,27rem)]',
+    lift: '-translate-y-[4%]',
+    z: 130,
+    overlap: '',
+  },
+  {
+    width: 'w-[38vw] sm:w-[clamp(11rem,23vw,21rem)]',
+    lift: 'translate-y-[5%]',
+    z: 40,
+    overlap: '-ml-[8vw] sm:-ml-[3.5vw]',
+  },
 ] as const;
 
 type PlaneProps = {
@@ -882,19 +898,37 @@ export function FinalCta() {
                 return (
                   <div
                     key={flavour.id}
-                    className={cn('relative', fan.width, fan.lift)}
+                    className={cn('relative', fan.width, fan.lift, fan.overlap)}
                     style={{ transform: `translateZ(${fan.z}px)` }}
                   >
                     <Float amplitude={14} rotate={1.6} duration={4.6} phase={index * 0.33}>
-                      <div style={{ rotate: `${fan.rotate}deg` } as CSSProperties}>
+                      <div className="relative">
+                        {/* The light it stands in, and the shadow it casts.
+                            Two ellipses rather than a `drop-shadow`: a filter
+                            on a child of a `preserve-3d` subtree flattens it,
+                            and this pair is cheaper besides. */}
                         <span
-                          className="absolute inset-x-[8%] bottom-[-6%] h-[30%] rounded-[50%] blur-2xl"
+                          aria-hidden
+                          className="absolute inset-x-[14%] bottom-[2%] h-[16%] rounded-[50%] bg-black/55 blur-2xl"
+                        />
+                        <span
+                          aria-hidden
+                          className="absolute inset-x-[6%] bottom-[-4%] h-[26%] rounded-[50%] blur-2xl"
                           style={{ background: flavour.tone.glow }}
                         />
-                        <BottleImage
-                          flavour={flavour}
-                          className="aspect-3/4 w-full rounded-t-full rounded-b-[2rem] shadow-[0_50px_90px_-40px_rgb(0_0_0/0.9)] ring-1 ring-white/15"
+                        <Image
+                          src={flavour.cutout.src}
                           alt=""
+                          width={flavour.cutout.width}
+                          height={flavour.cutout.height}
+                          /* The centre bottle is the widest of the three
+                             (29vw against 23vw) and the phone fan is wider
+                             still, so the hint is cut for the largest of them:
+                             ask for too little and the browser serves a source
+                             narrower than the element and the label goes soft. */
+                          sizes="(min-width: 640px) 33vw, 48vw"
+                          quality={90}
+                          className="relative h-auto w-full"
                         />
                       </div>
                     </Float>

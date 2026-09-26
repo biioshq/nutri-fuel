@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/Logo';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '@/components/ui/brand-icons';
-import { Magnetic } from '@/components/motion/Magnetic';
 import { useSmoothScroll } from '@/components/layout/SmoothScroll';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { useIsoLayoutEffect } from '@/hooks/useIsoLayoutEffect';
@@ -250,11 +249,16 @@ export function Nav() {
             </ul>
 
             <div className="flex items-center gap-2">
-              <Magnetic className="hidden sm:inline-block" strength={0.22} padding={24}>
-                <Button asChild size="sm" variant={onDark ? 'light' : 'primary'}>
-                  <a href={SHOP_HREF}>Shop Now</a>
-                </Button>
-              </Magnetic>
+              {/* Not magnetic: in a pill this tight, a button that drifts
+                  toward the cursor reads as the nav coming loose. */}
+              <Button
+                asChild
+                size="sm"
+                variant={onDark ? 'light' : 'primary'}
+                className="hidden sm:inline-flex"
+              >
+                <a href={SHOP_HREF}>Shop Now</a>
+              </Button>
 
               <button
                 ref={toggleRef}
